@@ -31,21 +31,47 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'no_hp' => 'required|max:20|regex:/^[0-9+\- ]+$/',
+            'alamat'  => 'required|string|max:255',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ],
+        [
+    'nama.required' => 'Nama harus diisi.',
+    'nama.string' => 'Nama harus berupa teks.',
+    'nama.max' => 'Nama maksimal 255 karakter.',
+
+    'no_hp.required' => 'Nomor HP harus diisi.',
+    'no_hp.max' => 'Nomor HP maksimal 20 karakter.',
+    'no_hp.regex' => 'Nomor HP hanya boleh angka, +, -, dan spasi.',
+
+    'alamat.required' => 'Alamat harus diisi.',
+    'alamat.string' => 'Alamat harus berupa teks.',
+    'alamat.max' => 'Alamat maksimal 255 karakter.',
+
+    'email.required' => 'Email harus diisi.',
+    'email.email' => 'Format email tidak valid.',
+    'email.unique' => 'Email sudah terdaftar.',
+
+    'password.required' => 'Password harus diisi.',
+    'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+    'password.min' => 'Password minimal 6 karakter.',
+]
+);
 
         $user = User::create([
-            'name' => $request->name,
+            'nama' => $request->nama,
             'email' => $request->email,
+            'no_hp' => $request->no_hp,
+            'alamat' => $request->alamat,
             'password' => Hash::make($request->password),
+            'role' => 'pelanggan',
         ]);
 
-        event(new Registered($user));
-
+        event(new Registered($user)); // akan mengirim email verification
         Auth::login($user);
+        return redirect()->route('verification.notice');
 
-        return redirect(route('dashboard', absolute: false));
     }
 }

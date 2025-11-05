@@ -19,5 +19,10 @@
         "react-dom": "^18.2.0",
         "tailwindcss": "^3.2.1",
         "vite": "^6.0.11"
+    },
+    "dependencies": {
+        "@mantine/core": "^8.3.6",
+        "@mantine/form": "^8.3.6",
+        "@mantine/hooks": "^8.3.6"
     }
 }

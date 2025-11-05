@@ -1,10 +1,7 @@
-import Checkbox from '@/Components/Checkbox';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import AuthLayout from '@/Layouts/AuthLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { TextInput, PasswordInput, Button, NumberInput, Textarea, Checkbox } from "@mantine/core";
+
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -23,78 +20,34 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <AuthLayout>
-            <Head title="Log in" />
-
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
-
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
-                        onChange={(e) => setData('email', e.target.value)}
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
+                <Head title="Login" />
+                <h1 className="text-3xl font-bold text-center mb-3">Login</h1>
+                <p className="text-center text-sm text-gray-500 mb-6">
+                  Belum Punya Akun? <Link href="/register" className="text-orange-500">Daftar Sekarang</Link>
+                </p>
+        
+                <form onSubmit={submit} className="w-full">
+                    <TextInput size="md" radius="md" label="Email" value={data.email} onChange={(e) => setData('email', e.target.value)} error={errors.email} mb="md" />
+                    <PasswordInput size="md" radius="md" label="Password" value={data.password} onChange={(e) => setData('password', e.target.value)} error={errors.password} mb="md" />
+                    <Checkbox
+                        label="Ingat"
+                        checked={data.remember}
+                        onChange={(e) =>
                                 setData('remember', e.target.checked)
                             }
+                        color="orange"
+                        mb="md"
                         />
-                        <span className="ms-2 text-sm text-gray-600">
-                            Remember me
-                        </span>
-                    </label>
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
+                 {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-main focus:ring-offset-2"
                         >
                             Forgot your password?
                         </Link>
                     )}
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
-                </div>
-            </form>
-        </AuthLayout>
+                    <Button fullWidth type="submit" color="orange" disabled={processing}>Login</Button>
+                </form>
+            </AuthLayout>
     );
 }

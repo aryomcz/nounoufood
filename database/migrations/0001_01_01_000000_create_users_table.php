@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('email')->unique();
-            $table->integer('no_hp')->unique();
+            $table->bigInteger('no_hp')->unique();
             $table->longText('alamat');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
