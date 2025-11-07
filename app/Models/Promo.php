@@ -9,7 +9,14 @@ class Promo extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'judul',
+        'deskripsi',
+        'diskon_persen',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'foto',
+    ];
 
     public function promo() {
         return $this->hasMany(Product::class);
