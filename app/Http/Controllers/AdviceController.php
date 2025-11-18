@@ -16,8 +16,16 @@ class AdviceController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function destroy(Request $request)
     {
-        
+        $ids = $request->ids; // array ID dari Inertia
+
+        if (!$ids || !is_array($ids)) {
+            return back()->with('error', 'ID tidak valid.');
+        }
+
+        Advice::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'Tipe produk berhasil dihapus.');
     }
 }

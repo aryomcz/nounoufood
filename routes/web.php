@@ -52,10 +52,16 @@ Route::prefix('/dashboard')->middleware(['auth', 'verified', 'role:admin'])->gro
     Route::post('/company-profile', [CompanyProfileController::class, 'store'])->name('company.store');
 
     Route::get('/store', [StoreController::class, 'index'])->name('dashboard.store');
-    
+
     Route::get('/faq', [FAQController::class, 'index'])->name('dashboard.faq');
+    Route::delete('/faq/delete', [FAQController::class, 'destroy'])->name('faq.delete');
+    Route::post('/faq/create', [FAQController::class, 'store'])->name('faq.store');
+    Route::put('/faq/update/{id}', [FAQController::class, 'update'])->name('faq.update');
+
     Route::get('/testimoni', [ReviewController::class, 'index'])->name('dashboard.testimoni');
+
     Route::get('/advice', [AdviceController::class, 'index'])->name('dashboard.advice');
+    Route::delete('/advice/{delete}', [AdviceController::class, 'destroy'])->name('advice.delete');
 });
 
 Route::middleware('auth')->group(function () {

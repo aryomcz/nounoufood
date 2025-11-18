@@ -10,7 +10,7 @@ class FAQController extends Controller
 {
     public function index()
     {
-        $faqs = FAQ::orderBy('id','desc')->get();
+        $faqs = Faq::orderBy('id','desc')->get();
 
         return Inertia::render('Dashboard/FAQ/Index', [
             'data' => $faqs
@@ -29,22 +29,33 @@ class FAQController extends Controller
         return back()->with('success','FAQ ditambahkan');
     }
 
-    public function update(Request $request, FAQ $faq)
+    public function update(Request $request, $id)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'pertanyaan' => 'required|string',
             'jawaban' => 'required|string',
         ]);
 
-        $faq->update($data);
+          try {
+            $type = Faq::findOrFail($id);
+            $type->update($validated);
 
-        return back()->with('success','FAQ diupdate');
+            return back()->with('success', 'FAQ berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memperbarui FAQ.');
+        }
     }
 
-    public function destroy(FAQ $faq)
+     public function destroy(Request $request)
     {
-        $faq->delete();
+        $ids = $request->ids; // array ID dari Inertia
 
-        return back()->with('success','FAQ dihapus');
+        if (!$ids || !is_array($ids)) {
+            return back()->with('error', 'ID tidak valid.');
+        }
+
+        Faq::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'Tipe produk berhasil dihapus.');
     }
 }
