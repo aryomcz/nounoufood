@@ -52,6 +52,9 @@ Route::prefix('/dashboard')->middleware(['auth', 'verified', 'role:admin'])->gro
     Route::post('/company-profile', [CompanyProfileController::class, 'store'])->name('company.store');
 
     Route::get('/store', [StoreController::class, 'index'])->name('dashboard.store');
+    Route::delete('/toko/delete', [StoreController::class, 'destroy'])->name('toko.delete');
+    Route::post('/toko/create', [StoreController::class, 'store'])->name('toko.store');
+    Route::put('/toko/update/{id}', [StoreController::class, 'update'])->name('toko.update');
 
     Route::get('/faq', [FAQController::class, 'index'])->name('dashboard.faq');
     Route::delete('/faq/delete', [FAQController::class, 'destroy'])->name('faq.delete');

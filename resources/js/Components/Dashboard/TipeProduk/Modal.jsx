@@ -41,10 +41,7 @@ export default function TipeProdukModal({
       />
 
       <Group justify="center">
-        {/* <Button variant="light" onClick={onClose}>
-          Batal
-        </Button> */}
-
+        
         <Button onClick={() => onSubmit(form)} radius="md">
           {mode === "create" ? "Tambah" : "Update"}
         </Button>

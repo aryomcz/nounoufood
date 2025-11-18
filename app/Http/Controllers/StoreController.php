@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Store;
+use DOMDocument;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,56 +16,77 @@ class StoreController extends Controller
     {
         $store = Store::get();
 
-        Inertia::render('Dashboard/Testimoni/Index', [
+        return Inertia::render('Dashboard/Toko/Index', [
             'data' => $store
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'nama' => 'required|string',
+            'alamat' => 'required|string',
+            'url_map' => 'required',
+            'url_map_embed' => 'required',
+        ]);
+
+        $dom = new DOMDocument();
+        $dom->loadHTML($request->url_map_embed);
+        $iframes = $dom->getElementsByTagName('iframe');
+        if ($iframes->length > 0) {
+            $iframe = $iframes[0];
+            $mapUrl = $iframe->getAttribute('src');
+        } else {
+            $mapUrl = $request->url_map_embed;
+        }
+
+        $data['url_map_embed'] = $mapUrl;
+
+        Store::create($data);
+
+        return back()->with('success','Toko ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Store $store)
+    public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+           'nama' => 'required|string',
+            'alamat' => 'required|string',
+            'url_map' => 'required',
+            'url_map_embed' => 'required',
+        ]);
+
+          try {
+            $type = Store::findOrFail($id);
+            $dom = new DOMDocument();
+            $dom->loadHTML($request->url_map_embed);
+            $iframes = $dom->getElementsByTagName('iframe');
+            if ($iframes->length > 0) {
+                $iframe = $iframes[0];
+                $mapUrl = $iframe->getAttribute('src');
+            } else {
+                $mapUrl = $request->url_map_embed;
+            }
+
+            $validated['url_map_embed'] = $mapUrl;
+            $type->update($validated);
+
+            return back()->with('success', 'Toko berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memperbarui Toko.');
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Store $store)
+     public function destroy(Request $request)
     {
-        //
-    }
+        $ids = $request->ids; // array ID dari Inertia
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Store $store)
-    {
-        //
-    }
+        if (!$ids || !is_array($ids)) {
+            return back()->with('error', 'ID tidak valid.');
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Store $store)
-    {
-        //
+        Store::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'Tipe produk berhasil dihapus.');
     }
 }

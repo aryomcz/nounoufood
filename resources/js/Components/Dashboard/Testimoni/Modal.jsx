@@ -51,13 +51,10 @@ export default function TipeProdukModal({
         error={errors.komentar}></Textarea>
 
         <Text size="sm">Bintang</Text>
-      <Rating onError={errors.bintang} value={form.bintang} onChange={(val) => setForm({ ...form, bintang: val })} />
+        <Rating onError={errors.bintang} value={form.bintang} onChange={(val) => setForm({ ...form, bintang: val })} />
 
-      <Group justify="center" mt={20}>
-        {/* <Button variant="light" onClick={onClose}>
-          Batal
-        </Button> */}
-
+        <Group justify="center" mt={20}>
+        
         <Button onClick={() => onSubmit(form)} radius="md">
           {mode === "create" ? "Tambah" : "Update"}
         </Button>
