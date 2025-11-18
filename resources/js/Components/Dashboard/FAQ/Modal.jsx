@@ -30,7 +30,7 @@ export default function FAQModal({
       centered
       size="sm"
       radius="lg"
-      title={mode === "create" ? "Tambah Tipe Produk" : "Edit Tipe Produk"}
+      title={mode === "create" ? "Tambah FAQ" : "Edit FAQ"}
     >
       <Textarea
         label="Pertanyaan"

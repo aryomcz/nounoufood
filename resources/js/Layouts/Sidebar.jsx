@@ -1,6 +1,7 @@
 import { Link } from "@inertiajs/react";
 import { Icon } from "@iconify/react";
 import React, { useState } from "react";
+import { ScrollArea } from "@mantine/core";
 
 export default function Sidebar({ currentUrl }) {
   const [open, setOpen] = useState({}); // dynamic open state
@@ -52,8 +53,8 @@ const fullCurrentUrl = window.location.origin + currentUrl;
       <div className="flex justify-center py-4">
         <img src="/icon.png" alt="Logo" width={90} height={90} />
       </div>
-
-      <nav className="flex-1">
+      <ScrollArea mih={320} scrollbarSize="10">
+      <nav className="flex-1 mb-16">
         {menuGroups.map((group) => (
           <div key={group.title}>
             <div className="px-4">
@@ -133,6 +134,7 @@ const fullCurrentUrl = window.location.origin + currentUrl;
           </div>
         ))}
       </nav>
+      </ScrollArea>
     </aside>
   );
 }

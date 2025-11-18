@@ -59,9 +59,12 @@ Route::prefix('/dashboard')->middleware(['auth', 'verified', 'role:admin'])->gro
     Route::put('/faq/update/{id}', [FAQController::class, 'update'])->name('faq.update');
 
     Route::get('/testimoni', [ReviewController::class, 'index'])->name('dashboard.testimoni');
+    Route::delete('/testimoni/delete', [ReviewController::class, 'destroy'])->name('testimoni.delete');
+    Route::post('/testimoni/create', [ReviewController::class, 'store'])->name('testimoni.store');
+    Route::put('/testimoni/update/{id}', [ReviewController::class, 'update'])->name('testimoni.update');
 
     Route::get('/advice', [AdviceController::class, 'index'])->name('dashboard.advice');
-    Route::delete('/advice/{delete}', [AdviceController::class, 'destroy'])->name('advice.delete');
+    Route::delete('/advice/delete', [AdviceController::class, 'destroy'])->name('advice.delete');
 });
 
 Route::middleware('auth')->group(function () {

@@ -13,59 +13,53 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        //
-        $review = Review::get();
+        $testi = Review::get();
 
-        Inertia::render('Dashboard/Testimoni/Index', [
-            'data' => $review
+        return Inertia::render('Dashboard/Testimoni/Index', [
+            'data' => $testi
         ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+ public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'nama' => 'required|string',
+            'komentar' => 'required|string',
+            'bintang' => 'required',
+        ]);
+
+        Review::create($data);
+
+        return back()->with('success','Testimoni ditambahkan');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+             'nama' => 'required|string',
+            'komentar' => 'required|string',
+            'bintang' => 'required',
+        ]);
+
+          try {
+            $type = Review::findOrFail($id);
+            $type->update($validated);
+
+            return back()->with('success', 'Testimoni berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memperbarui Testimoni.');
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Review $review)
+     public function destroy(Request $request)
     {
-        //
-    }
+        $ids = $request->ids; // array ID dari Inertia
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Review $review)
-    {
-        //
-    }
+        if (!$ids || !is_array($ids)) {
+            return back()->with('error', 'ID tidak valid.');
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Review $review)
-    {
-        //
-    }
+        Review::whereIn('id', $ids)->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Review $review)
-    {
-        //
+        return back()->with('success', 'Tipe produk berhasil dihapus.');
     }
 }
