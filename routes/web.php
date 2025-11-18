@@ -29,6 +29,7 @@ Route::get('/', function () {
 
 Route::prefix('/dashboard')->middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/orders', [OrderController::class, 'index'])->name('dashboard.order');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus']);
 
@@ -47,11 +48,14 @@ Route::prefix('/dashboard')->middleware(['auth', 'verified', 'role:admin'])->gro
     Route::get('/promo', [PromoController::class, 'index'])->name('dashboard.promo');
     Route::post('/promo', [PromoController::class, 'store'])->name('promo.store');
 
+    Route::get('/company-profile', [CompanyProfileController::class, 'index'])->name('dashboard.company');
+    Route::post('/company-profile', [CompanyProfileController::class, 'store'])->name('company.store');
+
     Route::get('/store', [StoreController::class, 'index'])->name('dashboard.store');
+    
     Route::get('/faq', [FAQController::class, 'index'])->name('dashboard.faq');
     Route::get('/testimoni', [ReviewController::class, 'index'])->name('dashboard.testimoni');
     Route::get('/advice', [AdviceController::class, 'index'])->name('dashboard.advice');
-    Route::get('/company-profile', [CompanyProfileController::class, 'index'])->name('dashboard.company');
 });
 
 Route::middleware('auth')->group(function () {

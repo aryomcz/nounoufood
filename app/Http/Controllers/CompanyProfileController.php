@@ -13,10 +13,6 @@ class CompanyProfileController extends Controller
     {
         $profile = CompanyProfile::first();
 
-        if($profile){
-            $profile->foto_url = $profile->foto ? asset('storage/'.$profile->foto) : null;
-        }
-
         return Inertia::render('Dashboard/CompanyProfile/Index', [
             'data' => $profile
         ]);
@@ -24,65 +20,48 @@ class CompanyProfileController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'sejarah' => 'nullable|string',
+        $validated = $request->validate([
+            'sejarah' => 'string',
             'tahun_berdiri' => 'nullable|string',
             'visi' => 'nullable|string',
             'misi' => 'nullable|string',
             'email' => 'nullable|email',
-            'no_hp' => 'nullable|string',
+            'no_hp' => 'max:20|regex:/^[0-9+\- ]+$/',
             'tiktok' => 'nullable|string',
             'shopee' => 'nullable|string',
-            'foto' => 'nullable|image|max:2048'
         ]);
 
-        if($request->hasFile('foto')){
-            $pictureName = time().'_'.$request->foto->getClientOriginalName();
-            $data['foto'] = $request->foto->storeAs('company', $pictureName, 'public');
+        $company = CompanyProfile::first();
+
+
+        // 📌 PROSES FOTO CUSTOM NAME
+        if ($request->hasFile('foto')) {
+
+            $file = $request->file('foto');
+            $ext  = $file->getClientOriginalExtension();
+            $filename = 'profile-' . date('Y-m-d') . '-' . time() . '.' . $ext;
+
+            $file->storeAs('company', $filename, 'public');
+            $validated['foto'] = asset('storage/company/' . $filename);
+
+            // HAPUS FOTO LAMA
+            if ($company && $company->foto) {
+                $oldFile = basename($company->foto);
+                $oldPath = storage_path('app/public/promo/' . $oldFile);
+                if (file_exists($oldPath)) unlink($oldPath);
+            }
         }
 
-        CompanyProfile::create($data);
+        // 📌 JIKA ADA → UPDATE
+        if ($company) {
+            $company->update($validated);
+        } 
+        // 📌 JIKA BELUM ADA → CREATE
+        else {
+            $company = CompanyProfile::create($validated);
+        }
 
         return back()->with('success','Company Profile dibuat');
     }
 
-    public function update(Request $request, CompanyProfile $companyProfile)
-    {
-        $data = $request->validate([
-            'sejarah' => 'nullable|string',
-            'tahun_berdiri' => 'nullable|string',
-            'visi' => 'nullable|string',
-            'misi' => 'nullable|string',
-            'email' => 'nullable|email',
-            'no_hp' => 'nullable|string',
-            'tiktok' => 'nullable|string',
-            'shopee' => 'nullable|string',
-            'foto' => 'nullable|image'
-        ]);
-
-        if($request->hasFile('foto')){
-            // hapus foto lama
-            if($companyProfile->foto){
-                Storage::disk('public')->delete($companyProfile->foto);
-            }
-
-            $pictureName = time().'_'.$request->foto->getClientOriginalName();
-            $data['foto'] = $request->foto->storeAs('company', $pictureName, 'public');
-        }
-
-        $companyProfile->update($data);
-
-        return back()->with('success','Company Profile diupdate');
-    }
-
-    public function destroy(CompanyProfile $companyProfile)
-    {
-        if($companyProfile->foto){
-            Storage::disk('public')->delete($companyProfile->foto);
-        }
-
-        $companyProfile->delete();
-
-        return back()->with('success','Company Profile dihapus');
-    }
 }
