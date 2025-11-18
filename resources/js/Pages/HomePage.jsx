@@ -1,3 +1,4 @@
+import GuestLayout from '@/Layouts/GuestLayout';
 import { Link, usePage } from '@inertiajs/react'
 import React from 'react'
 
@@ -6,6 +7,7 @@ const HomePage = () => {
   console.log(!auth.user);
   
   return (
+    <GuestLayout>
     <div className='flex justify-between'>
       HomePage
       {!auth.user ?
@@ -18,6 +20,7 @@ const HomePage = () => {
         </Link>
       }
     </div>
+    </GuestLayout>
   )
 }
 
