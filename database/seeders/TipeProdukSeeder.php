@@ -2,18 +2,22 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\ProductType;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class TipeProdukSeeder extends Seeder
 {
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        $this->call(UserSeeder::class);
-        $this->call(TipeProdukSeeder::class);
+        ProductType::create([
+            'nama' => 'basreng',
+        ]);
+        ProductType::create([
+            'nama' => 'Keripik Kaca',
+        ]);
     }
 }

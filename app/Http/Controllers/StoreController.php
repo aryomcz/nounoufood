@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Store;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class StoreController extends Controller
 {
@@ -12,7 +13,11 @@ class StoreController extends Controller
      */
     public function index()
     {
-        //
+        $store = Store::get();
+
+        Inertia::render('Dashboard/Testimoni/Index', [
+            'data' => $store
+        ]);
     }
 
     /**

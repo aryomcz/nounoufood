@@ -4,62 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Models\FAQ;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class FAQController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $faqs = FAQ::orderBy('id','desc')->get();
+
+        return Inertia::render('Dashboard/FAQ/Index', [
+            'data' => $faqs
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'pertanyaan' => 'required|string',
+            'jawaban' => 'required|string',
+        ]);
+
+        FAQ::create($data);
+
+        return back()->with('success','FAQ ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(FAQ $fAQ)
+    public function update(Request $request, FAQ $faq)
     {
-        //
+        $data = $request->validate([
+            'pertanyaan' => 'required|string',
+            'jawaban' => 'required|string',
+        ]);
+
+        $faq->update($data);
+
+        return back()->with('success','FAQ diupdate');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(FAQ $fAQ)
+    public function destroy(FAQ $faq)
     {
-        //
-    }
+        $faq->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, FAQ $fAQ)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(FAQ $fAQ)
-    {
-        //
+        return back()->with('success','FAQ dihapus');
     }
 }

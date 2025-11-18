@@ -22,11 +22,11 @@ class Product extends Model
     ];
 
     public function product_type() {
-        return $this->belongsTo(ProductType::class);
+        return $this->belongsTo(ProductType::class, 'id_type');
     }
     
     public function promo() {
-        return $this->belongsTo(Promo::class);
+        return $this->belongsTo(Promo::class, 'id_promo');
     }
 
 }

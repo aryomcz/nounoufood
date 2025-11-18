@@ -21,8 +21,17 @@
         "vite": "^6.0.11"
     },
     "dependencies": {
+        "@iconify/react": "^6.0.2",
+        "@mantine/carousel": "^8.3.8",
         "@mantine/core": "^8.3.6",
+        "@mantine/dates": "^8.3.7",
+        "@mantine/dropzone": "^8.3.8",
         "@mantine/form": "^8.3.6",
-        "@mantine/hooks": "^8.3.6"
+        "@mantine/hooks": "^8.3.7",
+        "@mantine/modals": "^8.3.7",
+        "dayjs": "^1.11.19",
+        "embla-carousel": "^8.6.0",
+        "embla-carousel-react": "^8.6.0",
+        "recharts": "^3.3.0"
     }
 }

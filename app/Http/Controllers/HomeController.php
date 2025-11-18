@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompanyProfile;
+use App\Models\Product;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,15 +15,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        //
-         return Inertia::render('HomePage');
-    }
+        $products = Product::where('is_best_seller', true)->get();
+        // $promo = Promo::first();
+        $stores = Store::all();
+        $company = CompanyProfile::first();
+        // $cart
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function homedata()
-    {
-        //
+        
+        return Inertia::render('HomePage');
     }
 }

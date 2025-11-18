@@ -13,7 +13,7 @@ class ProductType extends Model
         'nama',
     ];
 
-    public function product() {
-        return $this->hasMany(Product::class);
+    public function products() {
+        return $this->hasMany(Product::class,'id_type');
     }
 }

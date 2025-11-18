@@ -18,7 +18,7 @@ class Promo extends Model
         'foto',
     ];
 
-    public function promo() {
-        return $this->hasMany(Product::class);
+    public function products() {
+        return $this->hasMany(Product::class,'id_promo');
     }
 }

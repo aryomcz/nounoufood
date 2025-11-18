@@ -20,10 +20,10 @@ class DetailOrder extends Model
     ];
 
     public function order() {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'id_order');
     }
 
     public function produk() {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'id_produk');
     }
 }

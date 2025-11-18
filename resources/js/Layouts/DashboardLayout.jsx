@@ -1,7 +1,7 @@
 // layouts/DashboardLayout.jsx
 import React, { useEffect, useState } from "react";
 import { AppShell } from "@mantine/core";
-import Sidebar from "@/Layouts/Sidebar";
+import Sidebar from "./Sidebar";
 import { Head, router } from "@inertiajs/react";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import Navbar from "./Navbar";
@@ -36,7 +36,7 @@ const DashboardLayout = ({ children, title }) => {
                 visibleFrom="sm"
                 className={`${darkMode ? "dark" : ""}`}
             >
-                <Sidebar />
+                <Sidebar currentUrl={location.pathname} />
             </AppShell.Navbar>
 
             <AppShell.Main
@@ -60,3 +60,4 @@ const DashboardLayout = ({ children, title }) => {
 };
 
 export default DashboardLayout;
+

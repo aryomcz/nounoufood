@@ -1,13 +1,21 @@
 import '../css/app.css';
 import './bootstrap';
 import "@mantine/core/styles.css";
-
+import '@mantine/dropzone/styles.css';
+import "@mantine/dates/styles.css";
+import '@mantine/carousel/styles.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { MantineProvider } from '@mantine/core';
+import { DatesProvider } from "@mantine/dates";
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
+import dayjs from "dayjs";
+import "dayjs/locale/id";
+import { ModalsProvider } from '@mantine/modals';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+dayjs.locale("id");
+
+const appName = import.meta.env.VITE_APP_NAME || 'Nounoufood';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -19,13 +27,16 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<MantineProvider>
-            {/* <ModalsProvider> */}
+        root.render(
+        <MantineProvider>
+            <ModalsProvider>
+            <DatesProvider settings={{ locale: "id" }}>
                 <App {...props} />
-            {/* </ModalsProvider> */}
+            </DatesProvider>
+            </ModalsProvider>
         </MantineProvider>);
     },
     progress: {
-        color: '#DD0303',
+        color: '#FAB12F',
     },
 });
