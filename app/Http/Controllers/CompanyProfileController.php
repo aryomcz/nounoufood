@@ -14,7 +14,7 @@ class CompanyProfileController extends Controller
         $profile = CompanyProfile::first();
 
         return Inertia::render('Dashboard/CompanyProfile/Index', [
-            'data' => $profile
+            'company' => $profile
         ]);
     }
 
@@ -47,7 +47,7 @@ class CompanyProfileController extends Controller
             // HAPUS FOTO LAMA
             if ($company && $company->foto) {
                 $oldFile = basename($company->foto);
-                $oldPath = storage_path('app/public/promo/' . $oldFile);
+                $oldPath = storage_path('app/public/company/' . $oldFile);
                 if (file_exists($oldPath)) unlink($oldPath);
             }
         }

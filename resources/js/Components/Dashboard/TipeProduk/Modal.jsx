@@ -1,48 +1,48 @@
 import { Modal, TextInput, Button, Group } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "@inertiajs/react";
 
 export default function TipeProdukModal({
   opened,
   onClose,
-  mode,        // "create" atau "edit"
-  initialData, // { id, nama }
+  mode,
+  initialData,
   onSubmit,
-  errors    // function(data)
 }) {
 
-  const [form, setForm] = useState({
+  const form = useForm({
     id: null,
     nama: "",
   });
 
-  // Set data saat modal dibuka
+  // Set initial data setiap modal dibuka
   useEffect(() => {
     if (opened) {
-      setForm(initialData);
+      form.setData(initialData);
+      form.clearErrors();
     }
   }, [opened, initialData]);
 
+  const handleSubmit = () => {
+    onSubmit(form);
+  };
+
   return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      centered
-      size="sm"
-      radius="lg"
+    <Modal opened={opened} onClose={onClose} centered size="sm" radius="lg"
       title={mode === "create" ? "Tambah Tipe Produk" : "Edit Tipe Produk"}
     >
+
       <TextInput
         label="Nama"
         placeholder="Nama tipe produk"
-        value={form.nama}
-        onChange={(e) => setForm({ ...form, nama: e.currentTarget.value })}
+        value={form.data.nama}
+        onChange={(e) => form.setData("nama", e.target.value)}
         mb="md"
-        error={errors.nama}
+        error={form.errors.nama}
       />
 
       <Group justify="center">
-        
-        <Button onClick={() => onSubmit(form)} radius="md">
+        <Button onClick={handleSubmit} radius="md" loading={form.processing}>
           {mode === "create" ? "Tambah" : "Update"}
         </Button>
       </Group>

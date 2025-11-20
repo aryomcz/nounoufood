@@ -1,13 +1,16 @@
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Link, usePage } from '@inertiajs/react'
+import { Head, Link, usePage } from '@inertiajs/react'
 import React from 'react'
+import HeroCarousel from './HomePage/Carousel';
+import Produk from './HomePage/Produk';
 
-const HomePage = () => {
+export default function HomePage(props) {
   const { auth } = usePage().props
-  console.log(!auth.user);
+  console.log(props);
   
   return (
     <GuestLayout>
+      <Head title={"Home"} />
     <div className='flex justify-between'>
       HomePage
       {!auth.user ?
@@ -20,8 +23,10 @@ const HomePage = () => {
         </Link>
       }
     </div>
+    <div className='bg-primary-60 w-full'>
+      <HeroCarousel />
+      <Produk />
+    </div>
     </GuestLayout>
   )
 }
-
-export default HomePage

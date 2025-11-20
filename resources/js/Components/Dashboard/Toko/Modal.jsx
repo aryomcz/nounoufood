@@ -1,3 +1,4 @@
+import { useForm } from "@inertiajs/react";
 import { Modal, TextInput, Button, Group, Textarea, Grid } from "@mantine/core";
 import { useEffect, useState } from "react";
 
@@ -6,16 +7,16 @@ export default function TokoModal({
   onClose,
   mode,        // "create" atau "edit"
   initialData, // { id, pertanyaan }
-  onSubmit,
-  errors    // function(data)
+  onSubmit
 }) {
 
-  const [form, setForm] = useState({ id: null, nama: "", alamat: "", url_map:"", url_map_embed:"" });
+  const form = useForm({ id: null, nama: "", alamat: "", url_map:"", url_map_embed:"" });
 
   // Set data saat modal dibuka
   useEffect(() => {
     if (opened) {
-      setForm(initialData);
+      form.setData(initialData);
+      form.clearErrors();
     }
   }, [opened, initialData]);
 
@@ -31,42 +32,42 @@ export default function TokoModal({
         <Grid>
             <Grid.Col span={6}>
                 <TextInput
-                    label="Pertanyaan"
-                    placeholder="Pertanyaan"
-                    value={form.nama}
-                    onChange={(e) => setForm({ ...form, nama: e.currentTarget.value })}
+                    label="Nama Toko"
+                    placeholder="Nama Toko"
+                    value={form.data.nama}
+                    onChange={(e) => form.setData("nama", e.target.value)}
                     mb="md"
-                    error={errors.nama}
+                    error={form.errors.nama}
                 />
             </Grid.Col>
             <Grid.Col span={6}>
                 <Textarea
                     label="Alamat"
                     placeholder="Alamat"
-                    value={form.alamat}
-                    onChange={(e) => setForm({ ...form, alamat: e.currentTarget.value })}
+                    value={form.data.alamat}
+                    onChange={(e) => form.setData("alamat", e.target.value)}
                     mb="md"
-                    error={errors.alamat}
+                    error={form.errors.alamat}
                 />
             </Grid.Col>
             <Grid.Col span={6}>
                 <Textarea
                     label="Url Google Map"
                     placeholder="Url Google Map"
-                    value={form.url_map}
-                    onChange={(e) => setForm({ ...form, url_map: e.currentTarget.value })}
+                    value={form.data.url_map}
+                    onChange={(e) => form.setData("url_map", e.target.value)}
                     mb="md"
-                    error={errors.url_map}
+                    error={form.errors.url_map}
                     />
             </Grid.Col>
             <Grid.Col span={6}>
                 <Textarea
                     label="Url Google Map Embed"
                     placeholder="Url Google Map Embed"
-                    value={form.url_map_embed}
-                    onChange={(e) => setForm({ ...form, url_map_embed: e.currentTarget.value })}
+                    value={form.data.url_map_embed}
+                    onChange={(e) => form.setData("url_map_embed", e.target.value)}
                     mb="md"
-                    error={errors.url_map_embed}
+                    error={form.errors.url_map_embed}
                 />
             </Grid.Col>
         </Grid>
@@ -74,7 +75,7 @@ export default function TokoModal({
 
       <Group justify="center">
         
-        <Button onClick={() => onSubmit(form)} radius="md">
+        <Button onClick={() => onSubmit(form)} radius="md" loading={form.processing}>
           {mode === "create" ? "Tambah" : "Update"}
         </Button>
       </Group>

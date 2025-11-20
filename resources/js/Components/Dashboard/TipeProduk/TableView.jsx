@@ -25,38 +25,35 @@ export default function TableView({ tipeProduk }) {
   const [formMode, setFormMode] = useState("create");
   const [formData, setFormData] = useState({ id: null, nama: "" });
 
-  const [errors, setErrors] = useState({}); // ⭐ ERROR STATE
-
   const openCreate = () => {
     setFormMode("create");
     setFormData({ id: null, nama: "" });
-    setErrors({}); // reset error
     setFormOpen(true);
   };
 
   const openEdit = (item) => {
     setFormMode("edit");
     setFormData({ id: item.id, nama: item.nama });
-    setErrors({}); // reset error
     setFormOpen(true);
   };
 
-  // 🔥 Submit Create / Update
-  const submitForm = (data) => {
-    setErrors({}); // reset error dulu
-
+  const submitForm = (form) => {
     if (formMode === "create") {
-      router.post(route("product-type.store"), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
+      form.post(route("product-type.store"), {
+        onSuccess: () => {
+          setFormOpen(false);
+          form.reset();
+        },
       });
     } else {
-      router.put(route("product-type.update", data.id), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
+      form.put(route("product-type.update", form.data.id), {
+        onSuccess: () => {
+          setFormOpen(false);
+        },
       });
     }
   };
+
 
   const itemsPerPage = 10;
 
@@ -281,7 +278,6 @@ export default function TableView({ tipeProduk }) {
         mode={formMode}
         initialData={formData}
         onSubmit={submitForm}
-        errors={errors} // ⭐ kirim error
       />
     </div>
   );

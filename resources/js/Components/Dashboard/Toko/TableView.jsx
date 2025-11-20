@@ -42,18 +42,19 @@ export default function TableView({ toko }) {
   };
 
   // 🔥 Submit Create / Update
-  const submitForm = (data) => {
-    setErrors({}); // reset error dulu
-
+  const submitForm = (form) => {
     if (formMode === "create") {
-      router.post(route("toko.store"), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
+      form.post(route("toko.store"), {
+        onSuccess: () => {
+          setFormOpen(false);
+          form.reset();
+        },
       });
     } else {
-      router.put(route("toko.update", data.id), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
+      form.put(route("toko.update", form.data.id), {
+        onSuccess: () => {
+          setFormOpen(false);
+        },
       });
     }
   };
@@ -279,7 +280,6 @@ export default function TableView({ toko }) {
         mode={formMode}
         initialData={formData}
         onSubmit={submitForm}
-        errors={errors} // ⭐ kirim error
       />
     </div>
   );

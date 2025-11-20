@@ -22,32 +22,27 @@ import { DatePickerInput } from "@mantine/dates";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { Icon } from "@iconify/react";
 import { router } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
+
 
 export default function PromoIndex({ products, promo}) {
   // --- form state (dates stored as Date objects) ---
-  const [form, setForm] = useState({
-    judul: promo?.judul || "",
-    tanggal_mulai: promo?.tanggal_mulai ? new Date(promo.tanggal_mulai) : null,
-    tanggal_selesai: promo?.tanggal_selesai ? new Date(promo.tanggal_selesai) : null,
-    diskon_persen: promo?.diskon_persen || "",
-    deskripsi: promo?.deskripsi || "",
-    foto: null,
-  });
+ const { data, setData, post, processing, transform, errors } = useForm({
+  judul: promo?.judul || "",
+  tanggal_mulai: promo?.tanggal_mulai ? new Date(promo.tanggal_mulai) : null,
+  tanggal_selesai: promo?.tanggal_selesai ? new Date(promo.tanggal_selesai) : null,
+  diskon_persen: promo?.diskon_persen || "",
+  deskripsi: promo?.deskripsi || "",
+  foto: null,
+  produk_ids: [],
+});
+
 
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [preview, setPreview] = useState(promo?.foto || null);
   const [mimeError, setMimeError] = useState("");
-  const [errors, setErrors] = useState({});
-  const [processing, setProcessing] = useState(false);
 
-  // --- helper to show error message (handles array or string) ---
-  const getError = (field) => {
-    if (!errors) return null;
-    const val = errors[field];
-    if (!val) return null;
-    return Array.isArray(val) ? val[0] : val;
-  };
 
   // --- image compression (returns File) ---
   const compressImage = async (file) => {
@@ -100,7 +95,7 @@ export default function PromoIndex({ products, promo}) {
     setMimeError("");
 
     const compressed = await compressImage(file);
-    setForm((prev) => ({ ...prev, foto: compressed }));
+    setData("foto", compressed);
 
     // revoke previous preview if it was a blob URL
     if (preview && preview.startsWith("blob:")) {
@@ -152,45 +147,19 @@ export default function PromoIndex({ products, promo}) {
     return `${d}`;
   };
 
+    transform((data) => ({
+    ...data,
+    tanggal_mulai: formatDateForBackend(data.tanggal_mulai),
+    tanggal_selesai: formatDateForBackend(data.tanggal_selesai),
+  }));
+
   // --- submit ---
-  const submitPromo = useCallback(() => {
-    setErrors({});
-    setProcessing(true);
+  const submitPromo = () => {
+  post(route("promo.store"), {
+    forceFormData: true,  // WAJIB karena ada foto
+  });
+  };
 
-    const formData = new FormData();
-    formData.append("judul", form.judul);
-    formData.append("tanggal_mulai", formatDateForBackend(form.tanggal_mulai));
-    formData.append("tanggal_selesai", formatDateForBackend(form.tanggal_selesai));
-    formData.append("diskon_persen", form.diskon_persen);
-    formData.append("deskripsi", form.deskripsi || "");
-
-    if (form.foto) {
-      formData.append("foto", form.foto);
-    }
-
-    // append selected product ids as produk_ids[]
-    if (selectedProducts.length > 0) {
-      selectedProducts.forEach((id) => formData.append("produk_ids[]", id));
-    }
-
-    router.post(route("promo.store"), formData, {
-      forceFormData: true,
-      preserveScroll: true,
-      onStart: () => setProcessing(true),
-      onSuccess: () => {
-        setProcessing(false);
-        // optionally you can redirect or show toast; backend may redirect
-      },
-      onError: (errs) => {
-        // errs is the validation object from Laravel (422)
-        setErrors(errs || {});
-        setProcessing(false);
-      },
-      onFinish: () => {
-        setProcessing(false);
-      },
-    });
-  }, [form, selectedProducts]);
 
   const formatRupiah = (num) =>
   new Intl.NumberFormat("id-ID", {
@@ -215,7 +184,8 @@ export default function PromoIndex({ products, promo}) {
                     URL.revokeObjectURL(preview);
                     }
                     setPreview(null);
-                    setForm((prev) => ({ ...prev, foto: null }));
+                    setData("foto", null);
+
                 }}
                 >
                 Ganti Foto
@@ -242,9 +212,9 @@ export default function PromoIndex({ products, promo}) {
                 {mimeError}
             </Text>
             )}
-            {getError("foto") && (
+            {errors.foto && (
             <Text c="red" size="xs">
-                {getError("foto")}
+                {errors.foto}
             </Text>
             )}
         </Stack>
@@ -255,9 +225,9 @@ export default function PromoIndex({ products, promo}) {
             <TextInput
                 label="Judul"
                 placeholder="Judul Promo"
-                value={form.judul}
-                onChange={(e) => setForm((prev) => ({ ...prev, judul: e.target.value }))}
-                error={getError("judul")}
+                value={data.judul}
+                onChange={(e) => setData("judul", e.target.value)}
+                error={errors.judul}
             />
             </Grid.Col>
 
@@ -265,9 +235,9 @@ export default function PromoIndex({ products, promo}) {
             <DatePickerInput
                 label="Tanggal Mulai"
                 placeholder="Pilih tanggal mulai"
-                value={form.tanggal_mulai}
-                onChange={(val) => setForm((prev) => ({ ...prev, tanggal_mulai: val }))}
-                error={getError("tanggal_mulai")}
+                value={data.tanggal_mulai}
+                onChange={(val) => setData("tanggal_mulai", val)}
+                error={errors.tanggal_mulai}
                 withinPortal
             />
             </Grid.Col>
@@ -276,10 +246,10 @@ export default function PromoIndex({ products, promo}) {
             <DatePickerInput
                 label="Tanggal Berakhir"
                 placeholder="Pilih tanggal berakhir"
-                value={form.tanggal_selesai}
-                onChange={(val) => setForm((prev) => ({ ...prev, tanggal_selesai: val }))}
-                error={getError("tanggal_selesai")}
-                minDate={form.tanggal_mulai || undefined} 
+                value={data.tanggal_selesai}
+                onChange={(val) => setData("tanggal_selesai", val)}
+                error={errors.tanggal_selesai}
+                minDate={data.tanggal_mulai || undefined} 
                 withinPortal
             />
             </Grid.Col>
@@ -287,10 +257,10 @@ export default function PromoIndex({ products, promo}) {
             <Grid.Col span={6}>
             <NumberInput
                 label="Besar Diskon (%)"
-                value={form.diskon_persen}
+                value={data.diskon_persen}
                 placeholder="10"
-                onChange={(val) => setForm((prev) => ({ ...prev, diskon_persen: val }))}
-                error={getError("diskon_persen")}
+                onChange={(val) => setData("diskon_persen", val)}
+                error={errors.diskon_persen}
                 min={0}
                 max={100}
             />
@@ -300,9 +270,9 @@ export default function PromoIndex({ products, promo}) {
             <Textarea
                 label="Deskripsi"
                 placeholder="Deskripsi promo"
-                value={form.deskripsi}
-                onChange={(e) => setForm((prev) => ({ ...prev, deskripsi: e.target.value }))}
-                error={getError("deskripsi")}
+                value={data.deskripsi}
+                onChange={(e) => setData("deskripsi", e.target.value)}
+                error={errors.deskripsi}
             />
             </Grid.Col>
         </Grid>
@@ -326,9 +296,9 @@ export default function PromoIndex({ products, promo}) {
             </Stack>
 
             {/* show validation message for produk */}
-            {getError("produk_ids") && (
+            {errors.produk_ids && (
             <Text c="red" size="xs">
-                {getError("produk_ids")}
+                {errors.produk_ids}
             </Text>
             )}
 
@@ -373,12 +343,16 @@ export default function PromoIndex({ products, promo}) {
                             textAlign:"start"
                         }}
                         onClick={() => {
-                            setSelectedProducts((prev) =>
-                            prev.includes(p.id)
-                                ? prev.filter((x) => x !== p.id)
-                                : [...prev, p.id]
-                            );
-                        }}
+                            let newList;
+                            if (selectedProducts.includes(p.id)) {
+                              newList = selectedProducts.filter((x) => x !== p.id);
+                            } else {
+                              newList = [...selectedProducts, p.id];
+                            }
+                            setSelectedProducts(newList);
+                            setData("produk_ids", newList); // <--- SINKRON
+                          }}
+
                         >
                         <Card.Section>
                             <Image src={p.foto} h={140} w="100%" fit="cover" />
@@ -395,7 +369,7 @@ export default function PromoIndex({ products, promo}) {
                             </Text>
                             <Group gap={4} className="text-primary-main">
                             <Text size="sm" c={"dark"} fw={700}>
-                                {formatRupiah(p.harga - (form.diskon_persen * p.harga) / 100)}
+                                {formatRupiah(p.harga - (data.diskon_persen * p.harga) / 100)}
                             </Text>
                             <Icon icon="iconamoon:discount" style={{ color:"##FAB12F"  }} width={24}/>
                             </Group>
@@ -414,7 +388,7 @@ export default function PromoIndex({ products, promo}) {
         </Stack>
 
         <Group justify="center" mt={20}>
-            <Button size="md" radius="md" onClick={submitPromo} disabled={processing}>
+            <Button size="md" radius="md" onClick={submitPromo} loading={processing}>
             {processing ? "Menyimpan..." : "Simpan"}
             </Button>
         </Group>

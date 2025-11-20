@@ -24,10 +24,7 @@ export default function TableView({ testi }) {
 
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState("create");
-  const [formData, setFormData] = useState({ id: null, nama: "", komentar: "", bintang: null });
-
-  const [errors, setErrors] = useState({}); // ⭐ ERROR STATE
-  // const [processing, setProcessing] = useState({}); 
+  const [formData, setFormData] = useState({});
 
  const openCreate = () => {
   setFormMode("create");
@@ -52,18 +49,20 @@ const openEdit = (item) => {
   setFormOpen(true);
 };
 
-  const submitForm = (data) => {
-    setErrors({}); // reset error dulu
+  const submitForm = (form) => {
 
     if (formMode === "create") {
-      router.post(route("testimoni.store"), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
+      form.post(route("testimoni.store"),{
+       onSuccess: () => {
+          setFormOpen(false);
+          form.reset();
+        },
       });
     } else {
-      router.put(route("testimoni.update", data.id), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
+      form.put(route("testimoni.update", form.data.id), {
+        onSuccess: () => {
+          setFormOpen(false);
+        },
       });
     }
   };
@@ -295,14 +294,11 @@ const openEdit = (item) => {
         onClose={() => 
         {
           setFormOpen(false)
-          setErrors({});
         }
         }
         mode={formMode}
         initialData={formData}
         onSubmit={submitForm}
-        // processing={processing}
-        errors={errors}
       />
     </div>
   );

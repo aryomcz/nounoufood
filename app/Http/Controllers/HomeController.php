@@ -20,8 +20,8 @@ class HomeController extends Controller
         $stores = Store::all();
         $company = CompanyProfile::first();
         // $cart
-
-        
-        return Inertia::render('HomePage');
+        return Inertia::render('HomePage', [
+            'produk' => $products
+        ]);
     }
 }

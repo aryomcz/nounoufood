@@ -17,35 +17,29 @@ import {
 import { DatePickerInput, YearPickerInput } from "@mantine/dates";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { Icon } from "@iconify/react";
-import { router } from "@inertiajs/react";
+import { router, useForm } from "@inertiajs/react";
 
-export default function CompanyIndex({data}) {
-  // --- form state (dates stored as Date objects) ---
-  const [form, setForm] = useState({
-    sejarah: data?.sejarah || "",
-    tahun_berdiri: data?.tahun_berdiri ? new Date(data.tahun_berdiri, 0, 1) : null,
-    visi: data?.visi || "",
-    misi: data?.misi || "",
-    email: data?.email || "",
-    no_hp: data?.no_hp || "",
-    tiktok: data?.tiktok || "",
-    shopee: data?.shopee || "",
+export default function CompanyIndex({company}) {
+  const { data, setData, post, processing, transform, errors } = useForm({
+    sejarah: company?.sejarah || "",
+    tahun_berdiri: company?.tahun_berdiri ? new Date(company.tahun_berdiri, 0, 1) : null,
+    visi: company?.visi || "",
+    misi: company?.misi || "",
+    email: company?.email || "",
+    no_hp: company?.no_hp || "",
+    tiktok: company?.tiktok || "",
+    shopee: company?.shopee || "",
     foto: null,
 });
 
+ transform((data) => ({
+    ...data,
+    tahun_berdiri: data.tahun_berdiri.getFullYear(),
+  }));
 
-  const [preview, setPreview] = useState(data?.foto || null);
+
+  const [preview, setPreview] = useState(company?.foto || null);
   const [mimeError, setMimeError] = useState("");
-  const [errors, setErrors] = useState({});
-  const [processing, setProcessing] = useState(false);
-
-  // --- helper to show error message (handles array or string) ---
-  const getError = (field) => {
-    if (!errors) return null;
-    const val = errors[field];
-    if (!val) return null;
-    return Array.isArray(val) ? val[0] : val;
-  };
 
   // --- image compression (returns File) ---
   const compressImage = async (file) => {
@@ -98,8 +92,7 @@ export default function CompanyIndex({data}) {
     setMimeError("");
 
     const compressed = await compressImage(file);
-    setForm((prev) => ({ ...prev, foto: compressed }));
-
+    setData("foto", compressed);
     // revoke previous preview if it was a blob URL
     if (preview && preview.startsWith("blob:")) {
       URL.revokeObjectURL(preview);
@@ -109,8 +102,8 @@ export default function CompanyIndex({data}) {
 
   
   useEffect(() => {
-    setPreview(data?.foto || null);
-  }, [data]);
+    setPreview(company?.foto || null);
+  }, [company]);
 
   // cleanup preview URL on unmount
   useEffect(() => {
@@ -124,45 +117,12 @@ export default function CompanyIndex({data}) {
 
 
   // --- submit ---
-  const submitCompany = useCallback(() => {
-    setErrors({});
-    setProcessing(true);
-    const formData = new FormData();
-    formData.append("sejarah", form.sejarah);
-    formData.append(
-        "tahun_berdiri",
-        form.tahun_berdiri ? form.tahun_berdiri.getFullYear() : ""
-    );
-
-    formData.append("visi", form.visi);
-    formData.append("misi", form.misi);
-    formData.append("email", form.email);
-    formData.append("no_hp", form.no_hp);
-    formData.append("tiktok", form.tiktok);
-    formData.append("shopee", form.shopee);
-
-    if (form.foto) {
-      formData.append("foto", form.foto);
-    }
-
-    router.post(route("company.store"), formData, {
-      forceFormData: true,
-      preserveScroll: true,
-      onStart: () => setProcessing(true),
-      onSuccess: () => {
-        setProcessing(false);
-        // optionally you can redirect or show toast; backend may redirect
-      },
-      onError: (errs) => {
-        // errs is the validation object from Laravel (422)
-        setErrors(errs || {});
-        setProcessing(false);
-      },
-      onFinish: () => {
-        setProcessing(false);
-      },
-    });
-  }, [form]);
+ const submitCompany = () => {
+  post(route("company.store"), {
+    forceFormData: true, // WAJIB karena ada file
+    preserveScroll: true,
+  });
+};
   
 
   return (
@@ -181,7 +141,7 @@ export default function CompanyIndex({data}) {
                     URL.revokeObjectURL(preview);
                     }
                     setPreview(null);
-                    setForm((prev) => ({ ...prev, foto: null }));
+                    setData("foto", null)
                 }}
                 >
                 Ganti Foto
@@ -208,9 +168,9 @@ export default function CompanyIndex({data}) {
                 {mimeError}
             </Text>
             )}
-            {getError("foto") && (
+            {errors.foto && (
             <Text c="red" size="xs">
-                {getError("foto")}
+                {errors.foto}
             </Text>
             )}
         </Stack>
@@ -221,9 +181,9 @@ export default function CompanyIndex({data}) {
             <Textarea
                 label="Sejarah"
                 placeholder="Sejarah Perusahaan"
-                value={form.sejarah}
-                onChange={(e) => setForm((prev) => ({ ...prev, sejarah: e.target.value }))}
-                error={getError("sejarah")}
+                value={data.sejarah}
+                onChange={(e) => setData("sejarah", e.target.value)}
+                error={errors.sejarah}
             />
             </Grid.Col>
 
@@ -232,14 +192,9 @@ export default function CompanyIndex({data}) {
            <YearPickerInput
             label="Tahun Berdiri"
             placeholder="Pilih tahun"
-            value={form.tahun_berdiri}
-            onChange={(val) =>
-                setForm((prev) => ({
-                ...prev,
-                tahun_berdiri: val, // simpan Date object
-                }))
-            }
-            error={getError("tahun_berdiri")}
+            value={data.tahun_berdiri}
+            onChange={(val) => setData("tahun_berdiri", val)}
+            error={errors.tahun_berdiri}
             />
 
             </Grid.Col>
@@ -248,9 +203,9 @@ export default function CompanyIndex({data}) {
              <Textarea
                 label="Visi"
                 placeholder="Visi Perusahaan"
-                value={form.visi}
-                onChange={(e) => setForm((prev) => ({ ...prev, visi: e.target.value }))}
-                error={getError("visi")}
+                value={data.visi}
+                onChange={(e) => setData("visi", e.target.value)}
+                error={errors.visi}
             />
             </Grid.Col>
 
@@ -258,19 +213,19 @@ export default function CompanyIndex({data}) {
              <Textarea
                 label="Misi"
                 placeholder="Misi Perusahaan"
-                value={form.misi}
-                onChange={(e) => setForm((prev) => ({ ...prev, misi: e.target.value }))}
-                error={getError("misi")}
+                value={data.misi}
+                onChange={(e) => setData("misi", e.target.value)}
+                error={errors.misi}
             />
             </Grid.Col>
 
             <Grid.Col span={6}>
             <TextInput
                 label="Email"
-                value={form.email}
+                value={data.email}
                 placeholder="Email Perusahaan"
-                onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-                error={getError("email")}
+                onChange={(e) => setData("email", e.target.value)}
+                error={errors.email}
             />
             </Grid.Col>
 
@@ -278,9 +233,9 @@ export default function CompanyIndex({data}) {
             <TextInput
                 label="WA Admin"
                 placeholder="No HP Admin"
-                value={form.no_hp}
-                onChange={(e) => setForm((prev) => ({ ...prev, no_hp: e.target.value }))}
-                error={getError("no_hp")}
+                value={data.no_hp}
+                onChange={(e) => setData("no_hp", e.target.value)}
+                error={errors.no_hp}
             />
             </Grid.Col>
 
@@ -288,9 +243,9 @@ export default function CompanyIndex({data}) {
             <TextInput
                 label="Link Tiktok"
                 placeholder="Tiktok"
-                value={form.tiktok}
-                onChange={(e) => setForm((prev) => ({ ...prev, tiktok: e.target.value }))}
-                error={getError("tiktok")}
+                value={data.tiktok}
+                onChange={(e) => setData("tiktok", e.target.value)}
+                error={errors.tiktok}
             />
             </Grid.Col>
 
@@ -298,9 +253,9 @@ export default function CompanyIndex({data}) {
             <TextInput
                 label="Link Shopee"
                 placeholder="Shopee"
-                value={form.shopee}
-                onChange={(e) => setForm((prev) => ({ ...prev, shopee: e.target.value }))}
-                error={getError("shopee")}
+                value={data.shopee}
+                onChange={(e) => setData("shopee", e.target.value)}
+                error={errors.tiktok}
             />
             </Grid.Col>
         </Grid>

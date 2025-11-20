@@ -8,3 +8,10 @@
     font-display: auto;
     src: url('/fonts/Poppins.ttf') format('TrueType');
 }
+
+@font-face {
+    font-family: 'Poppins-2';
+    font-weight: 400;
+    font-display: auto;
+    src: url('/fonts/Poppins.woff') format('Woff');
+}
