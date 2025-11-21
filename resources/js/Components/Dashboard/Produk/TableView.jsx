@@ -23,10 +23,8 @@ export default function TableView({ produk, tipeProduk }) {
 
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState("create");
-  const [formData, setFormData] = useState({ id: null, nama: "" });
+  const [formData, setFormData] = useState({});
 
-  const [errors, setErrors] = useState({}); // ⭐ ERROR STATE
-  // const [processing, setProcessing] = useState({}); 
 
  const openCreate = () => {
   setFormMode("create");
@@ -59,21 +57,24 @@ const openEdit = (item) => {
   setFormOpen(true);
 };
 
-  const submitForm = (data) => {
-    setErrors({}); // reset error dulu
+ const submitForm = (form) => {
+  if (formMode === "create") {
+    form.post(route("products.store"), {
+      forceFormData: true,   // ⭐ WAJIB untuk upload foto
+      onSuccess: () => {
+        setFormOpen(false);
+        form.reset();
+      },
+    });
+  } else {
+    form.post(route("products.update", form.data.id), {
+      method: "put",
+      forceFormData: true,
+      onSuccess: () => setFormOpen(false),
+    });
+  }
+};
 
-    if (formMode === "create") {
-      router.post(route("products.store"), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
-      });
-    } else {
-      router.post(route("products.update", data.id), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
-      });
-    }
-  };
 
   const itemsPerPage = 10;
 
@@ -321,15 +322,12 @@ const openEdit = (item) => {
         onClose={() => 
         {
           setFormOpen(false)
-          setErrors({});
         }
         }
         mode={formMode}
         initialData={formData}
-        types={tipeProduk} // daftar tipe produk
+        types={tipeProduk}
         onSubmit={submitForm}
-        // processing={processing}
-        errors={errors}
       />
     </div>
   );

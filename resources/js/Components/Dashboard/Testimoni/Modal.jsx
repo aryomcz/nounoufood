@@ -1,3 +1,4 @@
+import { useForm } from "@inertiajs/react";
 import { Modal, TextInput, Button, Group, Rating, Textarea, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 
@@ -7,10 +8,9 @@ export default function TipeProdukModal({
   mode,        // "create" atau "edit"
   initialData, // { id, nama }
   onSubmit,
-  errors    // function(data)
 }) {
 
-  const [form, setForm] = useState({
+  const form = useForm({
     id: null,
     nama: "",
     komentar: "",
@@ -20,7 +20,8 @@ export default function TipeProdukModal({
   // Set data saat modal dibuka
   useEffect(() => {
     if (opened) {
-      setForm(initialData);
+      form.setData(initialData);
+      form.clearErrors();
     }
   }, [opened, initialData]);
 
@@ -36,26 +37,26 @@ export default function TipeProdukModal({
       <TextInput
         label="Nama"
         placeholder="Nama Testimoni"
-        value={form.nama}
-        onChange={(e) => setForm({ ...form, nama: e.currentTarget.value })}
+        value={form.data.nama}
+        onChange={(e) => form.setData("nama", e.currentTarget.value)}
         mb="md"
-        error={errors.nama}
+        error={form.errors.nama}
       />
 
       <Textarea 
         label="Komentar"
         placeholder="Komentar Testimoni"
-        value={form.komentar}
-        onChange={(e) => setForm({ ...form, komentar: e.currentTarget.value })}
+        value={form.data.komentar}
+        onChange={(e) => form.setData("komentar", e.currentTarget.value)}
         mb="md"
-        error={errors.komentar}></Textarea>
+        error={form.errors.komentar}></Textarea>
 
         <Text size="sm">Bintang</Text>
-        <Rating onError={errors.bintang} value={form.bintang} onChange={(val) => setForm({ ...form, bintang: val })} />
+        <Rating onError={form.errors.bintang} value={form.data.bintang} onChange={(val) => form.setData("bintang", val)} />
 
         <Group justify="center" mt={20}>
         
-        <Button onClick={() => onSubmit(form)} radius="md">
+        <Button onClick={() => onSubmit(form)} radius="md" loading={form.processing}>
           {mode === "create" ? "Tambah" : "Update"}
         </Button>
       </Group>

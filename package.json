@@ -32,6 +32,7 @@
         "@tabler/icons-react": "^3.35.0",
         "dayjs": "^1.11.19",
         "embla-carousel": "^8.6.0",
+        "embla-carousel-autoplay": "^8.6.0",
         "embla-carousel-react": "^8.6.0",
         "recharts": "^3.3.0"
     }

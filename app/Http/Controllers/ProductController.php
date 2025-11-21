@@ -33,8 +33,12 @@ class ProductController extends Controller
 
         // Upload Foto
         if ($request->hasFile('foto')) {
-            $path = $request->file('foto')->store('produk', 'public');
-            $validated['foto'] = asset('storage/' . $path); // URL langsung
+             $file = $request->file('foto');
+            $ext  = $file->getClientOriginalExtension();
+            $filename = 'produk-' . date('Y-m-d') . '-' . time() . '.' . $ext;
+
+            $file->storeAs('products', $filename, 'public');
+            $validated['foto'] = asset('storage/products/' . $filename);
         }
 
         $produk = Product::create($validated);
@@ -43,7 +47,7 @@ class ProductController extends Controller
     }
 
 
-  public function update(Request $request, $id)
+ public function update(Request $request, $id)
     {
         $produk = Product::findOrFail($id);
 
@@ -59,31 +63,31 @@ class ProductController extends Controller
         // === HANDLE FOTO BARU ===
         if ($request->hasFile('foto')) {
 
-            // Hapus foto lama dari storage
+            // hapus foto lama
             if ($produk->foto) {
-                // Ambil nama filenya dari URL
-                $filename = basename($produk->foto);
-
-                $oldPath = storage_path('app/public/produk/' . $filename);
-
-                if (file_exists($oldPath)) {
-                    unlink($oldPath);
-                }
+                $oldFile = basename($produk->foto);
+                $oldPath = storage_path('app/public/products/' . $oldFile);
+                if (file_exists($oldPath)) unlink($oldPath);
             }
 
-            // Simpan foto baru
-            $path = $request->file('foto')->store('produk', 'public');
+            // upload foto baru
+            $file = $request->file('foto');
+            $ext  = $file->getClientOriginalExtension();
+            $filename = 'produk-' . date('Y-m-d') . '-' . time() . '.' . $ext;
 
-            // Simpan URL baru
-            $validated['foto'] = asset('storage/' . $path);
+            $file->storeAs('products', $filename, 'public');
+
+            // update URL foto
+            $validated['foto'] = asset('storage/products/' . $filename);
+        } else {
+            // kalau tidak upload foto → pertahankan URL lama
+            $validated['foto'] = $produk->foto;
         }
 
         $produk->update($validated);
 
         return back()->with('success', 'Produk berhasil diupdate.');
     }
-
-
 
     public function updateBestSeller(Request $request, $id)
     {
@@ -100,16 +104,33 @@ class ProductController extends Controller
     }
 
 
-      public function destroy(Request $request)
+        public function destroy(Request $request)
     {
-        $ids = $request->ids; // array ID dari Inertia
+        $ids = $request->ids;
 
         if (!$ids || !is_array($ids)) {
             return back()->with('error', 'ID tidak valid.');
         }
 
-        Product::whereIn('id', $ids)->delete();
+        // Ambil semua produk yang akan dihapus
+        $products = Product::whereIn('id', $ids)->get();
 
-        return back()->with('success', 'Tipe produk berhasil dihapus.');
+        foreach ($products as $produk) {
+            // Hapus foto jika ada
+            if ($produk->foto) {
+                $oldFile = basename($produk->foto);
+                $oldPath = storage_path('app/public/products/' . $oldFile);
+
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+
+            // Hapus data produk
+            $produk->delete();
+        }
+
+        return back()->with('success', 'Produk berhasil dihapus.');
     }
+
 }

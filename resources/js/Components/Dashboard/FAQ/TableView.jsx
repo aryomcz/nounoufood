@@ -25,35 +25,31 @@ export default function TableView({ faq }) {
   const [formMode, setFormMode] = useState("create");
   const [formData, setFormData] = useState({ id: null, pertanyaan: "", jawaban: "" });
 
-  const [errors, setErrors] = useState({}); // ⭐ ERROR STATE
-
   const openCreate = () => {
     setFormMode("create");
     setFormData({ id: null, pertanyaan: "", jawaban: "" });
-    setErrors({}); // reset error
     setFormOpen(true);
   };
 
   const openEdit = (item) => {
     setFormMode("edit");
     setFormData({ id: item.id, pertanyaan: item.pertanyaan, jawaban: item.jawaban });
-    setErrors({}); // reset error
     setFormOpen(true);
   };
 
-  // 🔥 Submit Create / Update
-  const submitForm = (data) => {
-    setErrors({}); // reset error dulu
-
+  const submitForm = (form) => {
     if (formMode === "create") {
-      router.post(route("faq.store"), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
+      form.post(route("faq.store"), {
+        onSuccess: () => {
+          setFormOpen(false);
+          form.reset();
+        },
       });
     } else {
-      router.put(route("faq.update", data.id), data, {
-        onSuccess: () => setFormOpen(false),
-        onError: (err) => setErrors(err), // ⭐ ambil error 422
+      form.put(route("faq.update", form.data.id), {
+        onSuccess: () => {
+          setFormOpen(false);
+        },
       });
     }
   };
@@ -279,7 +275,6 @@ export default function TableView({ faq }) {
         mode={formMode}
         initialData={formData}
         onSubmit={submitForm}
-        errors={errors} // ⭐ kirim error
       />
     </div>
   );
