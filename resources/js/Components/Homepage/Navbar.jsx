@@ -40,11 +40,10 @@ export default function Navbar() {
                 <a href="#" className="flex items-center space-x-2 text-gray-900 font-semibold hover:text-[#E43535] transition-colors">
                     
                     <a href="#" className="flex items-center space-x-2 text-gray-900 font-semibold hover:text-[#E43535] transition-colors">
-                        {/* Ganti placeholder dengan Ikon Asli */}
                         <IconUserCircle 
-                            size={28}       // Ukuran ikon, sesuaikan jika terlalu besar/kecil
-                            stroke={1.5}    // Ketebalan garis ikon
-                            className="text-gray-900" // Warna ikon (Tailwind)
+                            size={28}
+                            stroke={1.5}
+                            className="text-gray-900"
                         />
                         <span className="hidden sm:inline">
                             Profile
