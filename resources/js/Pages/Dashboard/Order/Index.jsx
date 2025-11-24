@@ -6,7 +6,6 @@ import React from "react";
 import dayjs from "dayjs";
 
 const OrderIndex = (props) => {
-  console.log(props);
 
   const handleFilter = ({ dateRange, selectedStatus }) => {
   router.get("/dashboard/orders", {

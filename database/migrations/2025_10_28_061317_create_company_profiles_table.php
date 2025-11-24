@@ -18,7 +18,7 @@ return new class extends Migration
             $table->longText('visi');
             $table->longText('misi');
             $table->string('email');
-            $table->integer('no_hp');
+            $table->string('no_hp',20);
             $table->longText('tiktok');
             $table->longText('shopee');
             $table->longText('foto');

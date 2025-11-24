@@ -10,7 +10,6 @@ import Company from './HomePage/Company';
 import PromoModal from './HomePage/PromoModal';
 
 export default function HomePage(props) {
-  console.log(props);
   
   return (
     <GuestLayout>

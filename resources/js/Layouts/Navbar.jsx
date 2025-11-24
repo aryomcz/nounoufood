@@ -7,7 +7,6 @@ import Sidebar from "./Sidebar";
 const Navbar = ({ toggle, opened, setDarkMode, darkMode }) => {
 
     const { auth } = usePage().props
-    console.log(auth, 'nav');
 
     return (
         <>

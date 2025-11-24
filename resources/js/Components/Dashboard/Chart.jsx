@@ -3,7 +3,6 @@ import {
 } from 'recharts';
 
 export default function Chart({data, year}) {
-    console.log(data);
     
   return (
     <div className="w-full max-w-[600px] h-[400px]">

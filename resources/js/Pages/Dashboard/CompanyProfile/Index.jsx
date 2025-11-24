@@ -52,9 +52,27 @@ const toYearNumber = (value) => {
   foto: null,
 });
 
+  function normalizePhone(input) {
+    if (!input) return "";
+
+    // Buang semua karakter selain angka
+    let cleaned = input.replace(/\D/g, "");
+
+    // Jika mulai dengan "0" → ganti jadi "62"
+    if (cleaned.startsWith("0")) {
+      cleaned = "62" + cleaned.slice(1);
+    }
+
+    // Jika sudah mulai dengan "62", tetap
+    // Jika user memakai +62, nomor +nya sudah dihapus di atas, jadi aman
+    return cleaned;
+  }
+
+
   transform((data) => ({
     ...data,
-    tahun_berdiri: toYearNumber(data.tahun_berdiri), // ← aman juga
+    tahun_berdiri: toYearNumber(data.tahun_berdiri),
+    no_hp: normalizePhone(data.no_hp) // ← aman juga
   }));
   
 

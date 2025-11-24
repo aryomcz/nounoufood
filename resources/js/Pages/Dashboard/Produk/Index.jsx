@@ -3,7 +3,6 @@ import DashboardLayout from '@/Layouts/DashboardLayout';
 import React from 'react'
 
 const ProdukIndex = (props) => {
-    console.log(props);
     
     return (
             <div className="flex flex-col gap-6">

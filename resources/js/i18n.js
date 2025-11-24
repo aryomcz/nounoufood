@@ -72,6 +72,10 @@ const resources = {
             deskripsi_belum: "Deskripsi belum tersedia.",
             sertifikat_halal: "Sertifikat Halal MUI",
             nomor: "Nomor",
+            stok_habis: "Maaf untuk saat ini stok produk sedang habis",
+            minimum_qty: "Minimum Jumlah",
+            maximum_qty: "Stok Tidak Cukup",
+            stok: "Stok",
 
             button_lihat_semua: "Lihat Semua",
 
@@ -161,6 +165,10 @@ const resources = {
             deskripsi_belum: "Description not available yet.",
             sertifikat_halal: "Halal MUI Certificate",
             nomor: "Number",
+            stok_habis: "We are so sorry to announce you that this product is currently out of stock",
+            minimum_qty: "Minimum Quantity",
+            maximum_qty: "The Product Is Out Of Stock",
+            stok: "Stock",
 
             button_lihat_semua: "View All",
 

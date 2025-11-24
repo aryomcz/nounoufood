@@ -5,6 +5,8 @@ import { Icon } from "@iconify/react";
 import { useRef } from "react";
 import classes from "../../../css/Hero.module.css"
 import { useTranslation } from "react-i18next";
+import {motion} from "motion/react";
+
 
 export default function Toko({toko}) {
   const {t} = useTranslation();
@@ -12,8 +14,24 @@ export default function Toko({toko}) {
   return (
     <div id="toko" className="w-full flex flex-col justify-center items-center py-10 gap-2 md:gap-10">
       <div className="text-center flex flex-col gap-2">
-      <h1 className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{t('toko_title')}</h1>
-      <p className="font-poppins text-sm lg:text-lg capitalize">{t('toko_subtitle')} </p>
+      <motion.h1 initial={{ y: -100, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.7 }}
+        transition={{
+          type: "spring",
+          bounce: 0.45,
+          stiffness: 70,
+          damping: 12,
+        }} className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{t('toko_title')}</motion.h1>
+      <motion.p  initial={{ y: -100, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.7 }}
+        transition={{
+          type: "spring",
+          bounce: 0.45,
+          stiffness: 70,
+          damping: 12,
+        }} className="font-poppins text-sm lg:text-lg capitalize">{t('toko_subtitle')} </motion.p>
       </div>
       <Carousel
         slideSize="256px"

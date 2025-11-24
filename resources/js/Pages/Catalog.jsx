@@ -1,5 +1,5 @@
 import { Carousel } from "@mantine/carousel";
-import { Card, Image, Text, Button, Group, Badge, Stack, Drawer, Modal, NumberInput, Textarea,Portal } from "@mantine/core";
+import { Card, Image, Text, Button, Group, Badge, Stack, Drawer, Modal, NumberInput, Textarea,Portal, Tooltip } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
 import { Icon } from "@iconify/react";
 import { useRef, useState, useEffect} from "react";
@@ -9,6 +9,7 @@ import { useForm, usePage } from "@inertiajs/react";
 import { motion, LayoutGroup, AnimatePresence } from "motion/react";
 import { useTranslation } from "react-i18next";
 import {notifications} from "@mantine/notifications";
+import QuantitySelector from "@/Components/Homepage/QuantitySelector";
 
 export default function Catalog(props) {
     const { t } = useTranslation();
@@ -77,6 +78,12 @@ export default function Catalog(props) {
            }
       });
     };
+    const [nomorToko, setNomorToko] = useState("");
+    const no = usePage().props.company?.no_hp || "6281936110396";
+    useEffect(() => {
+     setNomorToko(no);
+    }, []); 
+
   
     const handleOrder = () => {
       form.post(route("order.single.store"), {
@@ -87,24 +94,22 @@ export default function Catalog(props) {
   
            const pesan =
               `Format Pemesanan Produk Nounoufood\n\n`+
-              `Nama: ${notif.whatsapp.nama}\n` +
-              `No Telepon: ${notif.whatsapp.phone}\n` +
-              `Alamat: ${notif.whatsapp.alamat}\n\n` +
+              `Nama: ${notification.whatsapp.nama}\n` +
+              `No Telepon: ${notification.whatsapp.phone}\n` +
+              `Alamat: ${notification.whatsapp.alamat}\n\n` +
   
               `Produk:\n` +
-              notif.whatsapp.items
+              notification.whatsapp.items
                 .map((i) => `- ${i.nama} x${i.qty}`)
                 .join("\n") +
               `\n\n` +
   
-              `Subtotal: ${formatRupiah(notif.whatsapp.subtotal)}\n` +
-              `Promo: -${formatRupiah(notif.whatsapp.diskon)}\n` +
-              `Total: ${formatRupiah(notif.whatsapp.total)}`;
+              `Subtotal: ${formatRupiah(notification.whatsapp.subtotal)}\n` +
+              `Promo: -${formatRupiah(notification.whatsapp.diskon)}\n` +
+              `Total: ${formatRupiah(notification.whatsapp.total)}`;
   
   
             const encoded = encodeURIComponent(pesan);
-  
-            const nomorToko = "6287820858924";
   
             // REDIRECT WA
             window.location.href = `https://wa.me/${nomorToko}?text=${encoded}`;
@@ -136,14 +141,53 @@ export default function Catalog(props) {
         minimumFractionDigits: 0,
         }).format(num);
 
+        const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08, // interval antar card
+      delayChildren: 0.05    // sedikit delay awal
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      bounce: 0.35,
+      stiffness: 70,
+      damping: 12,
+    },
+  },
+};
+
   return (
     <LayoutGroup>
     <GuestLayout>
-        <div className="w-full flex flex-col justify-center items-center py-10 gap-2 md:gap-10 px-4 sm:px-6 xl:px-24">
+        <div className="w-full flex flex-col justify-center items-center py-10 gap-2 md:gap-10 px-4 sm:px-6 xl:px-24 lg:py-20">
             {props?.produk?.filter((p) => p.products != null).map((p) => 
                 <div key={p.id} className="text-center flex flex-col gap-2 w-full justify-center items-center">
-                <h1 className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{p.nama}</h1>
+                <motion.h1 initial={{ y: -100, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{
+          type: "spring",
+          bounce: 0.45,
+          stiffness: 70,
+          damping: 12,
+        }} className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{p.nama}</motion.h1>
                 <div ref={carouselRef} className="w-full flex justify-center items-center">
+                   <motion.div
+                              variants={containerVariants}
+                              initial="hidden"
+                              whileInView="visible"
+                              viewport={{ once: true, amount: 0.5 }}
+                              className="w-full"
+                            >  
                <Carousel
                 slideSize="256px"
                 w={"100%"}
@@ -159,103 +203,153 @@ export default function Catalog(props) {
                 // styles={{ container: { justifyContent:"center" } }}
               >
                     {p.products.map((p) => (
-                    <Carousel.Slide
-                key={p.id}
-                data-card-id={p.id}
-                className="py-10"
-                style={{
-                  zIndex: selectedId === p.id ? 9999 : 1,
-                  position: "relative"
-                }}
-              >
-                <motion.div
-                  layoutId={`card-${p.id}`}
-                  onClick={() => { setSelectedId(p.id); setPreviewProduct(p); }}
-                  className="cursor-pointer"
-                >
-                  <Card shadow="xl" padding="lg" radius="lg" h="360px" w="100%" maw="256px" ta="start" withBorder style={{ borderRadius: "20px", position: "relative" }}>
-                    <Card.Section>
-                      <motion.img
-                        src={p.foto}
-                        alt={p.nama}
-                        className="h-[148px] w-full object-cover"
-                        layoutId={`image-${p.id}`}
-                        style={{ borderRadius: "10px" }}
-                      />
-                        </Card.Section>
+                      <motion.div variants={itemVariants} key={p.id}>
+                        <Carousel.Slide
+                    // key={p.id}
+                    data-card-id={p.id}
+                    className="py-10"
+                    style={{
+                      zIndex: selectedId === p.id ? 9999 : 1,
+                      position: "relative"
+                    }}
+                  >
+                    <motion.div
+                      layoutId={`card-${p.id}`}
+                      onClick={() => { setSelectedId(p.id); setPreviewProduct(p); }}
+                      className="cursor-pointer"
+                    >
+                      <Card shadow="xl" padding="lg" radius="lg" h="360px" w="100%" maw="256px" ta="start" withBorder style={{ borderRadius: "20px", position: "relative" }}>
+                        <Card.Section>
+                          <motion.img
+                            src={p.foto}
+                            alt={p.nama}
+                            className="h-[148px] w-full object-cover"
+                            layoutId={`image-${p.id}`}
+                            style={{ borderRadius: "10px" }}
+                          />
+                            </Card.Section>
 
-                        {p.is_best_seller == true && (
-                            <div className="absolute top-3 right-0 bg-secondary-main border-[3px] border-primary-main rounded-l-full font-poppins-2 text-white text-sm px-2 py-1">
-                            <p>Best Seller</p>
-                            </div>
-                        )}
-
-                        {p.promo && (
-                            <Badge color="yellow" variant="filled" style={{ position: "absolute", top: 10, left: 10, padding: "8px 10px", fontSize: "12px" }}>
-                            -{p.promo.diskon_persen}%
-                            </Badge>
-                        )}
-
-                        <Stack h={"100%"} justify="space-between">
-                            <div>
-                            <motion.p layoutId={`title-${p.id}`} className="font-semibold mt-3 text-md">{p.nama}</motion.p>
-                            {p.promo && <Text size="sm" c="dimmed" td="line-through">{formatRupiah(p.harga)}</Text>}
-                            {p.promo && (
-                                <Group align="center" gap={4} className="text-primary-main">
-                                <Text size="sm" c={"dark"} fw={700}>
-                                    {formatRupiah(p.harga - (p.promo.diskon_persen * p.harga) / 100)}
-                                </Text>
-                                <Icon icon="iconamoon:discount" style={{ color:"#FAB12F" }} width={28}/>
-                                </Group>
+                            {p.is_best_seller == true && (
+                                <div className="absolute top-3 right-0 bg-secondary-main border-[3px] border-primary-main rounded-l-full font-poppins-2 text-white text-sm px-2 py-1">
+                                <p>Best Seller</p>
+                                </div>
                             )}
-                            {!p.promo && <Text size="sm" fw={700}>{formatRupiah(p.harga)}</Text>} 
-                                {/* <Text size="sm" c={"dark"} fw={700}>
-                                    {p.qty}gr
-                                </Text> */}
-                            </div>
 
-                            <div className="flex items-center justify-between mt-3 gap-2 w-full">
-                            <Button color="orange" leftSection={<Icon icon="mdi:cart-plus" width={16} />} radius="lg" size="xs" onClick={e => { e.stopPropagation(); openDrawer(p); }} className="flex-1">
-                                {t('button_keranjang')}
-                            </Button>
+                            {p.promo && (
+                                <Badge color="yellow" variant="filled" style={{ position: "absolute", top: 10, left: 10, padding: "8px 10px", fontSize: "12px" }}>
+                                -{p.promo.diskon_persen}%
+                                </Badge>
+                            )}
 
-                            <Button color="green" leftSection={<Icon icon="ic:baseline-whatsapp" width={16} />} radius="lg" size="xs" className="flex-1"
-                                onClick={e => { e.stopPropagation(); setSelectedProduct(p); form.setData({ id_produk: p.id, qty:1, alamat: alamatPelanggan }); setWaDrawer(true); }}
-                            >
-                               {t('button_pesan')}
-                            </Button>
-                            </div>
-                        </Stack>
-                        </Card>
-                        </motion.div>
-                    </Carousel.Slide>
+                            <Stack h={"100%"} justify="space-between">
+                                <div>
+                                <motion.p layoutId={`title-${p.id}`} className="font-semibold mt-3 text-md">{p.nama}</motion.p>
+                                {p.promo && <Text size="sm" c="dimmed" td="line-through">{formatRupiah(p.harga)}</Text>}
+                                {p.promo && (
+                                    <Group align="center" gap={4} className="text-primary-main">
+                                    <Text size="sm" c={"dark"} fw={700}>
+                                        {formatRupiah(p.harga - (p.promo.diskon_persen * p.harga) / 100)}
+                                    </Text>
+                                    <Icon icon="iconamoon:discount" style={{ color:"#FAB12F" }} width={28}/>
+                                    </Group>
+                                )}
+                                {!p.promo && <Text size="sm" fw={700}>{formatRupiah(p.harga)}</Text>} 
+                                    {/* <Text size="sm" c={"dark"} fw={700}>
+                                        {p.qty}gr
+                                    </Text> */}
+                                </div>
+
+                                <div className="flex items-center justify-between mt-3 gap-2 w-full">
+                              <Tooltip
+                                  label={p.stok === 0 ? t('stok_habis') : ""}
+                                  disabled={p.stok !== 0}
+                                >
+                                  <Button
+                                    color="orange"
+                                    leftSection={<Icon icon="mdi:cart-plus" width={16} />}
+                                    radius="lg"
+                                    size="xs"
+                                    className="flex-1"
+                                    disabled={p.stok === 0}
+                                    onClick={e => {
+                                      if (p.stok === 0) return; // cegah klik
+                                      e.stopPropagation();
+                                      openDrawer(p);
+                                    }}
+                                  >
+                                    {t('button_keranjang')}
+                                  </Button>
+                                </Tooltip>
+
+                                <Tooltip
+                                  label={p.stok === 0 ? t('stok_habis') : ""}
+                                  disabled={p.stok !== 0}
+                                >
+                                  <Button
+                                    color="green"
+                                    leftSection={<Icon icon="ic:baseline-whatsapp" width={16} />}
+                                    radius="lg"
+                                    size="xs"
+                                    className="flex-1"
+                                    disabled={p.stok === 0}
+                                    onClick={e => {
+                                      if (p.stok === 0) return;
+                                      e.stopPropagation();
+                                      setSelectedProduct(p);
+                                      form.setData({ id_produk: p.id, qty: 1, alamat: alamatPelanggan });
+                                      setWaDrawer(true);
+                                    }}
+                                  >
+                                    {t('button_pesan')}
+                                  </Button>
+                                </Tooltip>
+
+                                </div>
+                            </Stack>
+                            </Card>
+                            </motion.div>
+                        </Carousel.Slide>
+                      </motion.div>
                     ))}
                 </Carousel>
+                </motion.div>
                 </div>
                 </div>
             )}
         </div>
         {/* Drawer Cart */}
-      <Drawer opened={opened} onClose={() => setOpened(false)} title="Tambah ke Keranjang" position="right" padding="lg">
+      <Drawer opened={opened} onClose={() => setOpened(false)} title={t('tambah_keranjang')} position="right" padding="lg">
         {selectedProduct && (
           <div className="flex flex-col gap-4 justify-center">
             <Image src={selectedProduct.foto} w={"100%"} maw={"320px"} h={"auto"} />
             <p className="font-medium">{selectedProduct.nama}</p>
 
-            <NumberInput label="Jumlah" min={1} value={form.data.qty} onChange={(v) => form.setData("qty", v)} />
+            <QuantitySelector
+                            cartId={selectedProduct.id}
+                            initialQty={form.data.qty}
+                            min={1}
+                            max={selectedProduct.stok ?? 1}
+                            onUpdateQty={(id, val) => form.setData("qty", val)}
+                          />
 
-            <Button onClick={submitCart} loading={form.processing} color="orange">Tambah ke Keranjang</Button>
+            <Button onClick={submitCart} loading={form.processing} color="orange">{t('tambah_keranjang')}</Button>
           </div>
         )}
       </Drawer>
 
       {/* Drawer WhatsApp */}
-      <Drawer opened={waDrawer} onClose={() => setWaDrawer(false)} title={t('tambah_keranjang')} position="right" padding="lg">
+      <Drawer opened={waDrawer} onClose={() => setWaDrawer(false)} title={t('lanjutkan_pesanan')}  position="right" padding="lg">
         {selectedProduct && (
           <div className="flex flex-col gap-4 justify-center">
             <Image src={selectedProduct.foto} w={"100%"} maw={"320px"} h={"auto"} />
             <p className="font-medium">{selectedProduct.nama}</p>
-            <NumberInput label={t('jumlah')} min={1} value={form.data.qty} onChange={(v) => form.setData("qty", v)} />
+            <QuantitySelector
+                            cartId={selectedProduct.id}
+                            initialQty={form.data.qty}
+                            min={1}
+                            max={selectedProduct.stok ?? 1}
+                            onUpdateQty={(id, val) => form.setData("qty", val)}
+                          />
             <Text>{t('alamat')}</Text>
             <Textarea placeholder={t('alamat')} value={form.data.alamat} onChange={(e) => form.setData("alamat", e.target.value)} />
             <Button color="orange" mt="sm" onClick={() => setConfirmModal(true)}>{t('lanjutkan_pesanan')}</Button>
@@ -305,6 +399,7 @@ export default function Catalog(props) {
                         </div>
       
                         {previewProduct.qty && <p className="text-sm text-gray-700 mt-3"><span className="font-semibold">{t('berat')}:</span> {previewProduct.qty}gr</p>}
+                        {previewProduct.stok ? <p className="text-sm text-gray-700 mt-3"><span className="font-semibold">{t('stok')}:</span> {previewProduct.stok} pcs</p> : <p className="text-sm text-gray-700 mt-3 font-semibold">{t('stok_habis')}</p>}
                         <p className="text-gray-600 text-sm mt-4 leading-relaxed">{previewProduct.deskripsi ?? t('deskripsi_belum')}</p>
       
                         {previewProduct.halal && (

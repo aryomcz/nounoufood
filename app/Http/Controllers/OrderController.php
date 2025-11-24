@@ -37,7 +37,7 @@ class OrderController extends Controller
         ]);
     }
 
-  public function updateStatus(Request $request, Order $order)
+    public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
             'status' => 'required|integer|in:0,1,2',
@@ -48,98 +48,95 @@ class OrderController extends Controller
         return notif_success("Status pesanan berhasil diubah");
     }
 
-
-
-
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Store new order (cart checkout)
      */
     public function store(Request $request)
-        {
-            $request->validate([
-                'items' => 'required|array',
-                'alamat' => 'required|string|max:255', // <---- wajib isi alamat
-            ]);
+    {
+        $request->validate([
+            'items' => 'required|array',
+            'alamat' => 'required|string|max:255',
+        ]);
 
-            $user = auth()->user();
+        $user = auth()->user();
 
-            // cek apakah alamat berubah
-            if ($request->alamat !== $user->alamat) {
-                $user->update([
-                    'alamat' => $request->alamat
+        if ($request->alamat !== $user->alamat) {
+            $user->update(['alamat' => $request->alamat]);
+        }
+
+        $alamatFinal = $request->alamat;
+
+        $carts = Cart::whereIn('id', $request->items)->with('products.promo')->get();
+
+        if ($carts->isEmpty()) {
+            return back()->withErrors('Tidak ada item yang dipilih.');
+        }
+
+        // ⚠ Validasi stok sebelum menyimpan order
+        foreach ($carts as $c) {
+            if ($c->qty > $c->products->stok) {
+                return back()->with('notification', [
+                    'title' => 'Stok Tidak Cukup',
+                    'message' => "Stok produk {$c->products->nama} tersisa {$c->products->stok}",
+                    'color' => 'red',
+                    'success' => false
                 ]);
             }
+        }
 
-            $alamatFinal = $request->alamat;
+        $subtotal_all = 0;
+        $promo_all = 0;
+        $total_all = 0;
+        $items = [];
 
-            $carts = Cart::whereIn('id', $request->items)->with('products.promo')->get();
+        foreach ($carts as $c) {
+            $harga = $c->products->harga;
+            $diskon = $c->products->promo->diskon_persen ?? 0;
 
-            if ($carts->isEmpty()) {
-                return back()->withErrors('Tidak ada item yang dipilih.');
-            }
-            $subtotal_all = 0;   // subtotal tanpa diskon
-            $promo_all = 0;      // total diskon
-            $total_all = 0;      // grand total setelah diskon
-            $items = [];
+            $subtotal = $harga * $c->qty;
+            $potongan = ($harga * $diskon / 100) * $c->qty;
 
-            foreach ($carts as $c) {
-                $harga = $c->products->harga;
-                $diskon = $c->products->promo->diskon_persen ?? 0;
+            $subtotal_all += $subtotal;
+            $promo_all += $potongan;
+            $total_all += ($subtotal - $potongan);
 
-                $subtotal = $harga * $c->qty; // subtotal per item
-                $potongan = ($harga * $diskon / 100) * $c->qty; // diskon per item
+            $items[] = [
+                'nama' => $c->products->nama,
+                'qty'  => $c->qty,
+                'harga' => $harga,
+                'diskon' => $diskon,
+            ];
+        }
 
-                $subtotal_all += $subtotal;     // total semua
-                $promo_all += $potongan;        // total diskon semua
-                $total_all += ($subtotal - $potongan);
+        // Simpan order
+        $order = Order::create([
+            'id_user' => $user->id,
+            'total' => $total_all,
+            'status' => 2,
+        ]);
 
-                $items[] = [
-                    'nama' => $c->products->nama,
-                    'qty'  => $c->qty,
-                    'harga' => $harga,
-                    'diskon' => $diskon,
-                ];
-            }
+        // Simpan detail order & kurangi stok
+        foreach ($carts as $c) {
 
+            $produk = $c->products;
 
-
-            // Simpan ke tabel orders
-            $order = Order::create([
-                'id_user' => $user->id,
-                'total' => $total_all,
-                'status' => 2, // default
+            DetailOrder::create([
+                'id_order' => $order->id,
+                'id_produk' => $produk->id,
+                'qty' => $c->qty,
+                'diskon' => $produk->promo->diskon_persen ?? 0,
+                'total' => ($produk->harga * $c->qty) - (($produk->harga * ($produk->promo->diskon_persen ?? 0) / 100) * $c->qty),
             ]);
 
-            // Masukkan ke tabel order_details
-            foreach ($carts as $c) {
-                $harga = $c->products->harga;
-                $diskon = $c->products->promo->diskon_persen ?? 0;
-                $subtotal = $harga * $c->qty;
-                $potongan = ($harga * $diskon / 100) * $c->qty;
+            // 👇 Kurangi stok
+            $produk->decrement('stok', $c->qty);
+        }
 
-                DetailOrder::create([
-                    'id_order' => $order->id,
-                    'id_produk' => $c->products->id,
-                    'qty' => $c->qty,
-                    'diskon' => $diskon,
-                    'total' => $subtotal - $potongan,
-                ]);
-            }
+        Cart::whereIn('id', $request->items)->delete();
 
-            // Hapus cart yang dipilih
-            Cart::whereIn('id', $request->items)->delete();
-
-          return back()->with('notification', [
+        return back()->with('notification', [
             'title' => 'Pesanan Berhasil',
-            'message' => 'Pesanan anda sudah dibuat, mohon ditunggu untuk kami arahkan ke whatsapp!',
+            'message' => 'Pesanan anda sudah dibuat!',
             'color' => 'green',
             'success' => true,
             'whatsapp' => [
@@ -152,14 +149,12 @@ class OrderController extends Controller
                 'items' => $items,
             ]
         ]);
-
-        }
-
+    }
 
     /**
-     * Display the specified resource.
+     * Store WA order (langsung 1 produk)
      */
-     public function storeWA(Request $request)
+    public function storeWA(Request $request)
     {
         $request->validate([
             'id_produk' => 'required|exists:products,id',
@@ -169,12 +164,21 @@ class OrderController extends Controller
 
         $user = auth()->user();
 
-        // update alamat jika berbeda
         if ($request->alamat !== $user->alamat) {
             $user->update(['alamat' => $request->alamat]);
         }
 
         $product = Product::with('promo')->findOrFail($request->id_produk);
+
+        // ⚠ Validasi stok
+        if ($request->qty > $product->stok) {
+            return back()->with('notification', [
+                'title' => 'Stok Tidak Cukup',
+                'message' => "Stok produk {$product->nama} hanya tersisa {$product->stok}",
+                'color' => 'red',
+                'success' => false
+            ]);
+        }
 
         $harga = $product->harga;
         $diskon = $product->promo->diskon_persen ?? 0;
@@ -183,14 +187,12 @@ class OrderController extends Controller
         $potongan = ($harga * $diskon / 100) * $request->qty;
         $total = $subtotal - $potongan;
 
-        // simpan order
         $order = Order::create([
             'id_user' => $user->id,
             'total' => $total,
-            'status' => 2, // default
+            'status' => 2,
         ]);
 
-        // simpan detail order
         DetailOrder::create([
             'id_order' => $order->id,
             'id_produk' => $product->id,
@@ -199,9 +201,12 @@ class OrderController extends Controller
             'total' => $total,
         ]);
 
+        // 👇 Kurangi stok
+        $product->decrement('stok', $request->qty);
+
         return back()->with('notification', [
             'title' => 'Pesanan Berhasil',
-            'message' => 'Pesanan anda sudah ditambahkan, mohon lanjut ke WhatsApp untuk konfirmasi!',
+            'message' => 'Pesanan anda sudah ditambahkan!',
             'color' => 'green',
             'success' => true,
             'whatsapp' => [
@@ -221,29 +226,7 @@ class OrderController extends Controller
         ]);
     }
 
-   
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Order $order)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Order $order)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Order $order)
-    {
-        //
-    }
+    public function edit(Order $order) {}
+    public function update(Request $request, Order $order) {}
+    public function destroy(Order $order) {}
 }

@@ -3,7 +3,6 @@ import DashboardLayout from '@/Layouts/DashboardLayout';
 import React from 'react'
 
 const HalalIndex = (props) => {
-    console.log(props)
     return (
         <div className="flex flex-col gap-6">
               <h1 className="font-poppins text-2xl ml-2">Sertifikasi Halal</h1>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import QuantitySelector from "@/Components/Cart/QuantitySelector";
 import GuestLayout from "@/Layouts/GuestLayout";
 import { router, useForm, usePage } from "@inertiajs/react";
@@ -44,6 +44,15 @@ export default function CartIndex({ carts, total, diskon }) {
     }
   }, [notification]);
 
+ const [nomorToko, setNomorToko] = useState("");
+
+    // Ambil dari props saat komponen mount
+    const no = usePage().props.company?.no_hp || "6281936110396";
+    useEffect(() => {
+      setNomorToko(no);
+    }, []);
+  
+
  const handleOrder = () => {
     router.post(
       route("order.store"),
@@ -83,8 +92,6 @@ export default function CartIndex({ carts, total, diskon }) {
 
 
           const encoded = encodeURIComponent(pesan);
-
-          const nomorToko = "6287820858924";
 
           // REDIRECT WA
           window.location.href = `https://wa.me/${nomorToko}?text=${encoded}`;

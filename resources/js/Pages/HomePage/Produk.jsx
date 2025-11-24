@@ -12,6 +12,7 @@ import {
   Modal,
   Textarea,
   Portal,
+  Tooltip,
 } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
 import { Icon } from "@iconify/react";
@@ -21,6 +22,7 @@ import { useForm, usePage } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
 import { motion, LayoutGroup, AnimatePresence } from "motion/react";
 import { useTranslation } from "react-i18next";
+import QuantitySelector from "@/Components/Homepage/QuantitySelector";
 
 export default function CarouselBestSeller({ produk }) {
   const { t } = useTranslation();
@@ -91,25 +93,31 @@ useEffect(() => {
     } });
   };
 
+ const [nomorToko, setNomorToko] = useState("");
+
+    // Ambil dari props saat komponen mount
+    const no = usePage().props.company?.no_hp || "6281936110396";
+    useEffect(() => {
+      setNomorToko(no);
+    }, []); 
+
   const handleOrder = () => {
     form.post(route("order.single.store"), {
       onSuccess: () => {
         setConfirmModal(false);
         setWaDrawer(false);
-
         const pesan =
           `Format Pemesanan Produk Nounoufood\n\n` +
-          `Nama: ${notif.whatsapp.nama}\n` +
-          `No Telepon: ${notif.whatsapp.phone}\n` +
-          `Alamat: ${notif.whatsapp.alamat}\n\n` +
+          `Nama: ${notification.whatsapp.nama}\n` +
+          `No Telepon: ${notification.whatsapp.phone}\n` +
+          `Alamat: ${notification.whatsapp.alamat}\n\n` +
           `Produk:\n` +
-          notif.whatsapp.items.map(i => `- ${i.nama} x${i.qty}`).join("\n") +
-          `\n\nSubtotal: ${formatRupiah(notif.whatsapp.subtotal)}\n` +
-          `Promo: -${formatRupiah(notif.whatsapp.diskon)}\n` +
-          `Total: ${formatRupiah(notif.whatsapp.total)}`;
+          notification.whatsapp.items.map(i => `- ${i.nama} x${i.qty}`).join("\n") +
+          `\n\nSubtotal: ${formatRupiah(notification.whatsapp.subtotal)}\n` +
+          `Promo: -${formatRupiah(notification.whatsapp.diskon)}\n` +
+          `Total: ${formatRupiah(notification.whatsapp.total)}`;
 
         const encoded = encodeURIComponent(pesan);
-        const nomorToko = "6287820858924";
         window.location.href = `https://wa.me/${nomorToko}?text=${encoded}`;
       },
       onError: () => {
@@ -134,18 +142,65 @@ useEffect(() => {
   const formatRupiah = (num) =>
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(num);
 
+  const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08, // interval antar card
+      delayChildren: 0.05    // sedikit delay awal
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      bounce: 0.35,
+      stiffness: 70,
+      damping: 12,
+    },
+  },
+};
+
   /*** JSX ***/
   return (
     <LayoutGroup>
       <div id="produk" className="w-full flex flex-col justify-center items-center py-10 gap-2 md:gap-10">
         {/* Header */}
         <div className="text-center flex flex-col gap-2">
-          <h1 className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{t('produk_best_seller')}</h1>
-          <p className="font-poppins text-sm lg:text-lg">{t('lihat_katalog')}</p>
+          <motion.h1 initial={{ y: -100, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.7 }}
+        transition={{
+          type: "spring",
+          bounce: 0.45,
+          stiffness: 70,
+          damping: 12,
+        }} className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{t('produk_best_seller')}</motion.h1>
+          <motion.p  initial={{ y: -100, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.7 }}
+        transition={{
+          type: "spring",
+          bounce: 0.45,
+          stiffness: 70,
+          damping: 12,
+        }} className="font-poppins text-sm lg:text-lg">{t('lihat_katalog')}</motion.p>
         </div>
 
         {/* Carousel */}
         <div ref={carouselRef} className="w-full flex justify-center items-center">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            className="w-full"
+          >  
           <Carousel
             slideSize="256px"
             w={"100%"}
@@ -161,8 +216,9 @@ useEffect(() => {
             // styles={{ container: { justifyContent:"center" } }}
           >
             {produk?.filter(p => p.is_best_seller === 1).map(p => (
+              <motion.div variants={itemVariants} key={p.id}>
               <Carousel.Slide
-                key={p.id}
+                // key={p.id}
                 data-card-id={p.id}
                 className="py-10"
                 style={{
@@ -216,28 +272,73 @@ useEffect(() => {
 
                       {/* Buttons */}
                       <div className="flex items-center justify-between mt-3 gap-2 w-full">
-                        <Button
-                          color="orange"
-                          leftSection={<Icon icon="mdi:cart-plus" width={16} />}
-                          radius="lg" size="xs" className="flex-1"
-                          onClick={e => { e.stopPropagation(); openDrawer(p); }}
-                        >{t('button_keranjang')}</Button>
-                        <Button
-                          color="green"
-                          leftSection={<Icon icon="ic:baseline-whatsapp" width={16} />}
-                          radius="lg" size="xs" className="flex-1"
-                          onClick={e => { e.stopPropagation(); setSelectedProduct(p); form.setData({ id_produk: p.id, qty:1, alamat: alamatPelanggan }); setWaDrawer(true); }}
-                        >{t('button_pesan')}</Button>
+                        <Tooltip
+                                                      label={p.stok === 0 ? t('stok_habis') : ""}
+                                                      disabled={p.stok !== 0}
+                                                    >
+                                                      <Button
+                                                        color="orange"
+                                                        leftSection={<Icon icon="mdi:cart-plus" width={16} />}
+                                                        radius="lg"
+                                                        size="xs"
+                                                        className="flex-1"
+                                                        disabled={p.stok === 0}
+                                                        onClick={e => {
+                                                          if (p.stok === 0) return; // cegah klik
+                                                          e.stopPropagation();
+                                                          openDrawer(p);
+                                                        }}
+                                                      >
+                                                        {t('button_keranjang')}
+                                                      </Button>
+                                                    </Tooltip>
+                        
+                                                    <Tooltip
+                                                      label={p.stok === 0 ? t('stok_habis') : ""}
+                                                      disabled={p.stok !== 0}
+                                                    >
+                                                      <Button
+                                                        color="green"
+                                                        leftSection={<Icon icon="ic:baseline-whatsapp" width={16} />}
+                                                        radius="lg"
+                                                        size="xs"
+                                                        className="flex-1"
+                                                        disabled={p.stok === 0}
+                                                        onClick={e => {
+                                                          if (p.stok === 0) return;
+                                                          e.stopPropagation();
+                                                          setSelectedProduct(p);
+                                                          form.setData({ id_produk: p.id, qty: 1, alamat: alamatPelanggan });
+                                                          setWaDrawer(true);
+                                                        }}
+                                                      >
+                                                        {t('button_pesan')}
+                                                      </Button>
+                                                    </Tooltip>
                       </div>
                     </Stack>
                   </Card>
                 </motion.div>
               </Carousel.Slide>
+              </motion.div>
             ))}
           </Carousel>
+          </motion.div>
         </div>
-
+        <motion.div initial={{ scale: 0.7, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{
+          type: "spring",
+          bounce: 0.55,
+          stiffness: 80,
+          damping: 14,
+        }}
+        >
+        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
         <Button component="a" href={route("catalog")} color="#FAB12F" size="md" mt="md">{t('button_lihat_semua')}</Button>
+        </motion.div>
+          </motion.div>
 
         {/* Drawers */}
         <Drawer opened={opened} onClose={() => setOpened(false)} title={t('tambah_keranjang')} position="right" padding="lg">
@@ -245,7 +346,13 @@ useEffect(() => {
             <div className="flex flex-col gap-4 justify-center">
               <Image src={selectedProduct?.foto} w="100%" maw="320px" h="auto" />
               <p className="font-medium">{selectedProduct?.nama}</p>
-              <NumberInput label={t('jumlah')} min={1} value={form.data.qty} onChange={v => form.setData("qty", v)} />
+              <QuantitySelector
+                cartId={selectedProduct.id}
+                initialQty={form.data.qty}
+                min={1}
+                max={selectedProduct.stok ?? 1}
+                onUpdateQty={(id, val) => form.setData("qty", val)}
+              />
               <Button onClick={submitCart} loading={form.processing} color="orange">{t('tambah_keranjang')}</Button>
             </div>
           )}
@@ -256,7 +363,13 @@ useEffect(() => {
             <div className="flex flex-col gap-4 justify-center">
               <Image src={selectedProduct.foto} w="100%" maw="320px" h="auto" />
               <p className="font-medium">{selectedProduct.nama}</p>
-              <NumberInput label={t('jumlah')} min={1} value={form.data.qty} onChange={v => form.setData("qty", v)} />
+              <QuantitySelector
+                cartId={selectedProduct.id}
+                initialQty={form.data.qty}
+                min={1}
+                max={selectedProduct.stok ?? 1}
+                onUpdateQty={(id, val) => form.setData("qty", val)}
+              />
               <Text>{t('alamat')}</Text>
               <Textarea placeholder={t('alamat')} value={form.data.alamat} onChange={e => form.setData("alamat", e.target.value)} />
               <Button color="orange" mt="sm" onClick={() => setConfirmModal(true)}>{t('lanjutkan_pesanan')}</Button>
@@ -307,6 +420,7 @@ useEffect(() => {
                   </div>
 
                   {previewProduct.qty && <p className="text-sm text-gray-700 mt-3"><span className="font-semibold">{t('berat')}:</span> {previewProduct.qty}gr</p>}
+                  {previewProduct.stok ? <p className="text-sm text-gray-700 mt-3"><span className="font-semibold">{t('stok')}:</span> {previewProduct.stok} pcs</p> : <p className="text-sm text-gray-700 mt-3 font-semibold">{t('stok_habis')}</p>}
                   <p className="text-gray-600 text-sm mt-4 leading-relaxed">{previewProduct.deskripsi ?? t('deskripsi_belum')}</p>
 
                   {previewProduct.halal && (

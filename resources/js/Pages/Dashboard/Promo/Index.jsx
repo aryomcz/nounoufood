@@ -85,7 +85,6 @@ export default function PromoIndex({ products, promo}) {
     });
   };
 
-  console.log(data.produk_ids);
   
   // --- drop handler ---
   const handleDrop = async (files) => {

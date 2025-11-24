@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { changeLanguage } from '@/i18n';
 
+
 export default function Navbar() {
     const { auth } = usePage().props;
     const [scrolled, setScrolled] = useState(false);
@@ -14,6 +15,8 @@ export default function Navbar() {
     const SCROLL_THRESHOLD = 80;
     const { t, i18n } = useTranslation();
     const [langDropdown, setLangDropdown] = useState(false);
+     const [isDragging, setIsDragging] = useState(false);
+
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
@@ -132,7 +135,53 @@ export default function Navbar() {
                     </motion.div>
                 </motion.div>
             </Drawer>
-               <div className="fixed bottom-4 right-4 z-50">
+                <motion.div
+                 // 🔥 bikin draggable
+      drag
+      dragMomentum={false} 
+      dragElastic={0.15} 
+      dragTransition={{ bounceStiffness: 200, bounceDamping: 12 }}
+
+      // 🔥 posisi awal (misalnya kanan bawah)
+      style={{ position: "fixed", bottom: "16px", right: "16px", zIndex: 9999 }}
+
+      // 🔥 ENTRY POP
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{
+        scale: 1,
+        opacity: 1,
+        y: [0, -6, 0], // floating effect
+      }}
+      transition={{
+        opacity: { duration: 0.4 },
+        scale: {
+          type: "spring",
+          stiffness: 120,
+          damping: 10,
+          duration: 0.4,
+        },
+        y: {
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        },
+      }}
+
+      // 🔥 HOVER WIGGLE
+      whileHover={{
+        rotate: [-4, 4, -4, 0],
+        transition: { duration: 0.35 },
+      }}
+
+      // 🔥 BOUNCE saat ditekan
+      whileTap={{
+        scale: 0.8,
+        transition: {
+          type: "spring",
+          stiffness: 300,
+          damping: 12,
+        },
+      }} className="fixed bottom-4 right-4 z-50">
                 <div className="relative bg-white border border-solid border-primary-main rounded-full">
                     <Icon
                         icon="mdi:earth"
@@ -159,7 +208,7 @@ export default function Navbar() {
                         </div>
                     )}
                 </div>
-            </div>
+            </motion.div>
         </>
     );
 }
