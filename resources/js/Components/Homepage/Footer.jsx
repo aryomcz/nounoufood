@@ -1,6 +1,7 @@
 import React from 'react'
 import { Title, Text } from '@mantine/core';
-import { IconMapPin, IconBrandWhatsapp, IconMail, IconBrandInstagram } from '@tabler/icons-react';
+import { Icon } from '@iconify/react';
+// import { IconMapPin, IconBrandWhatsapp, IconMail, IconBrandInstagram } from '@tabler/icons-react';
 
 export default function Footer() {
     const backgroundImageUrl = '/Footer.png'; 
@@ -15,7 +16,7 @@ export default function Footer() {
             }}
         >
             <div className="bg-[#FFC256]/90 pt-12 pb-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
                     
                     {/* Bagian Utama Footer: Grid 4 Kolom */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -34,10 +35,10 @@ export default function Footer() {
                                 Pasti Enaknya!
                             </Title>
 
-                            <div className="flex flex-col md:flex-row md:items-start gap-15 md:gap-20">
+                            <div className="md:hidden flex flex-col md:flex-row md:items-start gap-15 md:gap-20">
                                 {/* Alamat */}
                                 <div className="flex items-start space-x-3 flex-shrink-0">
-                                    <IconMapPin size={24} stroke={2} className="text-gray-900 flex-shrink-0 mt-1" />
+                                    <Icon icon="akar-icons:location" width={24} height={24}/>
                                     <Text className="text-gray-900 leading-relaxed">
                                         Botani Square Lantai UG, <br /> Yogya Junction Dramaga,<br />
                                         Home Production <br /> (Taman Cimanggu, Kota Bogor)
@@ -46,7 +47,7 @@ export default function Footer() {
 
                                 {/* WhatsApp */}
                                 <div className="flex items-center space-x-2 mt-10">
-                                    <IconBrandWhatsapp size={24} stroke={2} className="text-gray-900" />
+                                   <Icon icon="ic:baseline-whatsapp" width={24} />
                                     <a 
                                         href="https://wa.me/6281936110396" 
                                         className="text-gray-900 hover:text-[#E43535] transition-colors whitespace-nowrap text-sm cursor-pointer" 
@@ -59,7 +60,7 @@ export default function Footer() {
 
                                 {/* Email */}
                                 <div className="flex items-center space-x-2 mt-10">
-                                    <IconMail size={24} stroke={2} className="text-gray-900" />
+                                    <Icon icon="lucide:mail" width={24} />
                                     <a 
                                         href="mailto:Nastiticahayagemilang@gmail.com" 
                                         className="text-gray-900 hover:text-[#E43535] transition-colors whitespace-nowrap text-sm cursor-pointer"
@@ -72,7 +73,7 @@ export default function Footer() {
 
                                 {/* Instagram */}
                                 <div className="flex items-center space-x-2 mt-10">
-                                    <IconBrandInstagram size={24} stroke={2} className="text-gray-900" />
+                                    <Icon icon="lucide:instagram" width={24}/>
                                     <a 
                                         href="https://instagram.com/Danggedang_official" 
                                         target="_blank" 
@@ -84,7 +85,7 @@ export default function Footer() {
                                 </div>
                             </div>
                         </div>
-                            
+                           
                         {/* Kolom 2: Navigasi */}
                         <div className="space-y-4">
                             <Title order={4} className="font-bold text-gray-900 !text-xl mb-4">Navigasi</Title>
@@ -114,8 +115,57 @@ export default function Footer() {
                                 <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Shopee</a></li>
                                 <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">TikTok</a></li>
                             </ul>
-                        </div>
+                        </div>  
                     </div>
+                    {/* Alamat */}
+                     <div className='w-full hidden md:flex  justify-between gap-2 h-20'>
+                                <div className="flex gap-2 h-full items-center flex-shrink-0">
+                                    <Icon icon="akar-icons:location" width={24} height={24}/>
+                                    <p className="text-gray-900 leading-relaxed text-xs lg:text-base">
+                                        Botani Square Lantai UG, <br /> Yogya Junction Dramaga,<br />
+                                        Home Production <br /> (Taman Cimanggu, Kota Bogor)
+                                    </p>
+                                </div>
+
+                                {/* WhatsApp */}
+                                <div className="flex gap-2 h-full items-center">
+                                    <Icon icon="ic:baseline-whatsapp" width={24} />
+                                    <a 
+                                        href="https://wa.me/6281936110396" 
+                                        className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                    >
+                                        +62 819-3611-0396
+                                    </a>
+                                </div>
+
+                                {/* Email */}
+                                <div className="flex gap-2 h-full items-center">
+                                    <Icon icon="lucide:mail" width={24} />
+                                    <a 
+                                        href="mailto:Nastiticahayagemilang@gmail.com" 
+                                        className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer text-wrap"
+                                        target="_blank" 
+                                        // rel="noopener noreferrer"
+                                    >
+                                        Nastiticahayagemilang@gmail.com
+                                    </a>
+                                </div>
+
+                                {/* Instagram */}
+                                <div className="flex gap-2 h-full items-center">
+                                    <Icon icon="lucide:instagram" width={24}/>
+                                    <a 
+                                        href="https://instagram.com/Danggedang_official" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer"
+                                    >
+                                        @Danggedang_official
+                                    </a>
+                            </div>
+                            </div>
                     
                     {/* Copyright Bar */}
                     <div className="border-t border-gray-700 pt-6 mt-8">

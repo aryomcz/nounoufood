@@ -5,9 +5,9 @@ import { Link } from '@inertiajs/react';
 
 export default function GuestLayout({ children }) {
     return (
-        <div className="w-full min-h-screen">
+        <div className="w-full min-h-screen relative">
            <Navbar/>
-            <div className="w-full overflow-hidden bg-white">
+            <div className="w-full overflow-hidden bg-tertiary-80 pb-10">
                 {children}
             </div>
             <Footer />

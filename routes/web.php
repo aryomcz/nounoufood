@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AdviceController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FAQController;
+use App\Http\Controllers\HalalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -14,12 +16,26 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\StoreController;
 use App\Models\Advice;
 use App\Models\CompanyProfile;
+use App\Models\Halal;
 use App\Models\Review;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/products', [HomeController::class, 'catalog'])->name('catalog');
+
+Route::middleware(['auth', 'verified', 'role:pelanggan'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
+    Route::post('/cart', [CartController::class, 'create'])->name('cart.store');
+    Route::put('/cart', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart', [CartController::class, 'destroy'])->name('cart.delete');
+    Route::patch('/cart', [CartController::class, 'updateQty'])->name('cart.qty');
+
+    Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
+    Route::post('/order/singlestore', [OrderController::class, 'storeWA'])->name('order.single.store');
+
+});
 
 Route::prefix('/dashboard')->middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -38,6 +54,11 @@ Route::prefix('/dashboard')->middleware(['auth', 'verified', 'role:admin'])->gro
     Route::delete('/product-type/delete', [ProductTypeController::class, 'destroy'])->name('product-type.delete');
     Route::post('/product-type/create', [ProductTypeController::class, 'store'])->name('product-type.store');
     Route::put('/product-type/update/{id}', [ProductTypeController::class, 'update'])->name('product-type.update');
+
+    Route::get('/halal', [HalalController::class, 'index'])->name('dashboard.halal');
+    Route::delete('/halal/delete', [HalalController::class, 'destroy'])->name('halal.delete');
+    Route::post('/halal/create', [HalalController::class, 'store'])->name('halal.store');
+    Route::put('/halal/update/{id}', [HalalController::class, 'update'])->name('halal.update');
 
     Route::get('/promo', [PromoController::class, 'index'])->name('dashboard.promo');
     Route::post('/promo', [PromoController::class, 'store'])->name('promo.store');

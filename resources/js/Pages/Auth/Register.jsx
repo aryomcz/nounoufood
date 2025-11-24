@@ -33,7 +33,7 @@ export default function Register() {
 
           <TextInput size="md" radius="md" label="Nama Lengkap"  value={data.nama} onChange={(e) => setData('nama', e.target.value)} error={errors.nama} mb="md" />
           <TextInput size="md" radius="md" label="Email" value={data.email} onChange={(e) => setData('email', e.target.value)} error={errors.email} mb="md" />
-          <Textarea size="md" radius="md" label="Alamat" value={data.alamat} onChange={(e) => setData('alamat', e.target.value)} error={errors.alamat} mb="md" />
+          <Textarea autosize size="md" radius="md" label="Alamat" value={data.alamat} onChange={(e) => setData('alamat', e.target.value)} error={errors.alamat} mb="md" />
           <TextInput size="md" radius="md" label="No. Telp" value={data.no_hp} onChange={(e) => setData('no_hp', e.target.value)} error={errors.no_hp} mb="md" />
 
           <PasswordInput size="md" radius="md" label="Password" value={data.password} onChange={(e) => setData('password', e.target.value)} error={errors.password} mb="md" />

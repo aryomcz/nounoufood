@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Ramsey\Uuid\Type\Integer;
 
 return new class extends Migration
 {
@@ -12,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('halals', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_user')->nullable();
-            $table->integer('total');
-            $table->integer('status')->default(2);
+            $table->unsignedBigInteger('id_produk');
+            $table->text('no_sertifikasi');
+            $table->foreign('id_produk')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
-            $table->foreign('id_user')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('halals');
     }
 };

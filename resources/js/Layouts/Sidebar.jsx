@@ -29,6 +29,7 @@ const fullCurrentUrl = window.location.origin + currentUrl;
             { label: "Tipe", icon: "bx:tag", path: route("dashboard.product-type") },
             { label: "Katalog", icon: "fluent-mdl2:product-variant", path: route("dashboard.product") },
             { label: "Promo", icon: "iconamoon:discount", path: route("dashboard.promo") },
+            { label: "Halal", icon: "mdi:certificate-outline", path: route("dashboard.halal") },
           ]
         },
         {
@@ -51,7 +52,7 @@ const fullCurrentUrl = window.location.origin + currentUrl;
   return (
     <aside className="min-w-64 h-screen bg-white flex flex-col">
       <div className="flex justify-center py-4">
-        <img src="/icon.png" alt="Logo" width={90} height={90} />
+        <img src="/logo.png" alt="Logo" width={90} height={90} />
       </div>
       <ScrollArea mih={320} scrollbarSize="10">
       <nav className="flex-1 mb-16">

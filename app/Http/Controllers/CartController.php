@@ -2,64 +2,105 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
 use Illuminate\Http\Request;
+use App\Models\Cart;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Tampilkan isi keranjang
     public function index()
-    {
-        //
+  {
+        $carts = Cart::with(['products.promo'])
+            ->where('id_user', Auth::id())
+            ->get();
+
+        // hitung total otomatis
+        $total = 0;
+        $disc = 0;
+
+        foreach ($carts as $c) {
+            $harga = $c->products->harga;
+            $diskon = $c->products->promo->diskon_persen ?? 0;
+
+            $harga_disc = $harga - ($harga * $diskon / 100);
+            $subtotal = $harga * $c->qty;
+
+            $c->subtotal = $subtotal;
+
+            
+            $disc += ($harga * $diskon / 100) * $c->qty;
+
+            $total += $subtotal - $disc;
+        }
+
+        return inertia('Cart/Index', [
+            'carts' => $carts,
+            'total' => $total,
+            'diskon' => $disc
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Tambah ke keranjang
+    public function create(Request $request)
     {
-        //
+        $request->validate([
+            'id_produk' => 'required|integer',
+            'qty' => 'required|integer|min:1'
+        ]);
+
+        $product = Product::findOrFail($request->id_produk);
+
+        // Cek apakah sudah ada di cart
+        $existing = Cart::where('id_user', Auth::id())
+            ->where('id_produk', $product->id)
+            ->first();
+
+        if ($existing) {
+            $existing->qty += $request->qty;
+            $existing->save();
+        } else {
+            Cart::create([
+                'id_user' => Auth::id(),
+                'id_produk' => $product->id,
+                'qty' => $request->qty,
+            ]);
+        }
+
+        return back()->with('success', 'Produk ditambahkan ke keranjang');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // Update qty
+    public function updateQty(Request $request)
     {
-        //
+        $request->validate([
+            'cart_id' => 'required|integer',
+            'qty' => 'required|integer|min:1'
+        ]);
+
+        $cart = Cart::findOrFail($request->cart_id);
+        $cart->qty = $request->qty;
+        $cart->save();
+
+        return back()->with('success', 'Qty berhasil diperbarui');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cart $cart)
+    // Update cart item lainnya (opsional)
+    public function update(Request $request)
     {
-        //
+        // custom jika ada perubahan lain
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cart $cart)
+    // Hapus item
+    public function destroy(Request $request)
     {
-        //
-    }
+         if (!$request->cart_id || !is_array($request->cart_id)) {
+            return back()->with('error', 'ID tidak valid.');
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Cart $cart)
-    {
-        //
-    }
+        Cart::whereIn('id',$request->cart_id)->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Cart $cart)
-    {
-        //
+        return back()->with('success', 'Produk dihapus dari keranjang');
     }
 }

@@ -27,7 +27,7 @@ export default function ProdukModal({
 }) {
 
   // ⭐ Ganti useState → useForm inertia
-  const form = useForm({
+  const defaultFormData = {
     id: null,
     nama: "",
     qty: "",
@@ -36,7 +36,9 @@ export default function ProdukModal({
     id_type: "",
     is_best_seller: false,
     foto: null,
-  });
+  };
+
+  const form = useForm(defaultFormData);
 
   const [preview, setPreview] = useState(null);
   const [mimeError, setMimeError] = useState("");
@@ -44,7 +46,7 @@ export default function ProdukModal({
   // Prefill ketika modal dibuka
   useEffect(() => {
     if (opened) {
-      form.setData(initialData);
+      form.setData(initialData || defaultFormData);
       form.clearErrors();
 
       // preview foto lama
@@ -107,6 +109,19 @@ export default function ProdukModal({
     setPreview(URL.createObjectURL(compressed));
   };
 
+  const handleSubmit = () => {
+    onSubmit(form, () => {
+      form.reset(); // reset form setelah submit sukses
+      onClose();
+    });
+  };
+
+  // Handle close modal
+  const handleClose = () => {
+    form.reset(); // reset form saat ditutup
+    onClose();
+  };
+
   return (
     <Modal
       opened={opened}
@@ -139,6 +154,7 @@ export default function ProdukModal({
 
             <Textarea
               label="Deskripsi"
+              autosize
               value={form.data.deskripsi}
               error={form.errors.deskripsi}
               onChange={(e) => form.setData("deskripsi", e.target.value)}

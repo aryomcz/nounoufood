@@ -42,6 +42,7 @@ export default function TokoModal({
             </Grid.Col>
             <Grid.Col span={6}>
                 <Textarea
+                    autosize
                     label="Alamat"
                     placeholder="Alamat"
                     value={form.data.alamat}
@@ -53,6 +54,7 @@ export default function TokoModal({
             <Grid.Col span={6}>
                 <Textarea
                     label="Url Google Map"
+                    autosize
                     placeholder="Url Google Map"
                     value={form.data.url_map}
                     onChange={(e) => form.setData("url_map", e.target.value)}
@@ -63,6 +65,7 @@ export default function TokoModal({
             <Grid.Col span={6}>
                 <Textarea
                     label="Url Google Map Embed"
+                    autosize
                     placeholder="Url Google Map Embed"
                     value={form.data.url_map_embed}
                     onChange={(e) => form.setData("url_map_embed", e.target.value)}

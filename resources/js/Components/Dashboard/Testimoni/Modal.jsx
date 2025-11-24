@@ -45,6 +45,7 @@ export default function TipeProdukModal({
 
       <Textarea 
         label="Komentar"
+        autosize
         placeholder="Komentar Testimoni"
         value={form.data.komentar}
         onChange={(e) => form.setData("komentar", e.currentTarget.value)}

@@ -1,6 +1,6 @@
 import AuthLayout from '@/Layouts/AuthLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { TextInput, PasswordInput, Button, NumberInput, Textarea, Checkbox } from "@mantine/core";
+import { TextInput, PasswordInput, Button, Checkbox } from "@mantine/core";
 
 
 export default function Login({ status, canResetPassword }) {

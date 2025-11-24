@@ -1,5 +1,5 @@
 import { Link, router, usePage } from "@inertiajs/react";
-import { Burger, Button, Drawer, Flex, Image, Menu, Text } from "@mantine/core";
+import { Avatar, Burger, Button, Drawer, Flex, Image, Menu, Text } from "@mantine/core";
 import React from "react";
 import Sidebar from "./Sidebar";
 // import { IconHome } from "@tabler/icons-react";
@@ -52,7 +52,13 @@ const Navbar = ({ toggle, opened, setDarkMode, darkMode }) => {
                         }}
                     >
                         <Menu.Target>
-                            <div className="w-8 h-8 p-2 border-2 border-primary-main bg-tertiary-90 text-primary-main rounded-full flex justify-center items-center font-sans capitalize"><p>{auth.user.nama.slice(0,1)}</p></div>
+                            <Avatar
+                              radius="xl"
+                              color="orange"
+                              bd={"1px solid orange"}
+                              size="md">
+                                {auth.user.nama.slice(0, 2).toUpperCase()}
+                            </Avatar>
                         </Menu.Target>
 
                         <Menu.Dropdown>

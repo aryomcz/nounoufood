@@ -20,23 +20,41 @@ import { Icon } from "@iconify/react";
 import { router, useForm } from "@inertiajs/react";
 
 export default function CompanyIndex({company}) {
-  const { data, setData, post, processing, transform, errors } = useForm({
-    sejarah: company?.sejarah || "",
-    tahun_berdiri: company?.tahun_berdiri ? new Date(company.tahun_berdiri, 0, 1) : null,
-    visi: company?.visi || "",
-    misi: company?.misi || "",
-    email: company?.email || "",
-    no_hp: company?.no_hp || "",
-    tiktok: company?.tiktok || "",
-    shopee: company?.shopee || "",
-    foto: null,
+
+ // ubah value input (string/number/Date/null) menjadi Date valid
+const toDateYear = (value) => {
+  if (!value) return null;
+
+  if (value instanceof Date) return value;
+
+  const y = Number(value);
+  if (!isNaN(y)) return new Date(y, 0, 1);
+
+  return null;
+};
+
+// ubah Date → number (YYYY)
+const toYearNumber = (value) => {
+  return value?.split("-")[0];
+};
+
+ const { data, setData, post, processing, transform, errors } = useForm({
+  sejarah: company?.sejarah || "",
+  tahun_berdiri: `${(company?.tahun_berdiri)}-11-11`,   // ← aman
+  visi: company?.visi || "",
+  misi: company?.misi || "",
+  email: company?.email || "",
+  no_hp: company?.no_hp || "",
+  tiktok: company?.tiktok || "",
+  shopee: company?.shopee || "",
+  foto: null,
 });
 
- transform((data) => ({
+  transform((data) => ({
     ...data,
-    tahun_berdiri: data.tahun_berdiri.getFullYear(),
+    tahun_berdiri: toYearNumber(data.tahun_berdiri), // ← aman juga
   }));
-
+  
 
   const [preview, setPreview] = useState(company?.foto || null);
   const [mimeError, setMimeError] = useState("");
@@ -123,7 +141,6 @@ export default function CompanyIndex({company}) {
     preserveScroll: true,
   });
 };
-  
 
   return (
      <div className="bg-white border shadow-sm rounded-xl p-1">
@@ -180,6 +197,7 @@ export default function CompanyIndex({company}) {
             <Grid.Col span={6}>
             <Textarea
                 label="Sejarah"
+                autosize
                 placeholder="Sejarah Perusahaan"
                 value={data.sejarah}
                 onChange={(e) => setData("sejarah", e.target.value)}
@@ -189,19 +207,22 @@ export default function CompanyIndex({company}) {
 
             <Grid.Col span={6}>
                 
-           <YearPickerInput
+          <YearPickerInput
             label="Tahun Berdiri"
             placeholder="Pilih tahun"
             value={data.tahun_berdiri}
             onChange={(val) => setData("tahun_berdiri", val)}
             error={errors.tahun_berdiri}
-            />
+            clearable
+          />
+
 
             </Grid.Col>
 
             <Grid.Col span={6}>
              <Textarea
                 label="Visi"
+                autosize
                 placeholder="Visi Perusahaan"
                 value={data.visi}
                 onChange={(e) => setData("visi", e.target.value)}
@@ -212,6 +233,7 @@ export default function CompanyIndex({company}) {
             <Grid.Col span={6}>
              <Textarea
                 label="Misi"
+                autosize
                 placeholder="Misi Perusahaan"
                 value={data.misi}
                 onChange={(e) => setData("misi", e.target.value)}

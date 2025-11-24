@@ -24,6 +24,10 @@ class Product extends Model
     public function product_type() {
         return $this->belongsTo(ProductType::class, 'id_type');
     }
+
+    public function halal() {
+        return $this->hasOne(Halal::class, 'id_produk');
+    }
     
     public function promo() {
         return $this->belongsTo(Promo::class, 'id_promo');

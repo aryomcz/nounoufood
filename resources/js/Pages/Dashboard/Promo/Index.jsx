@@ -17,7 +17,7 @@ import {
   Box,
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
-import classes from './Demo.module.css';
+import classes from '../../../../css/Demo.module.css';
 import { DatePickerInput } from "@mantine/dates";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { Icon } from "@iconify/react";
@@ -83,6 +83,8 @@ export default function PromoIndex({ products, promo}) {
     });
   };
 
+  console.log(data.produk_ids);
+  
   // --- drop handler ---
   const handleDrop = async (files) => {
     const file = files[0];
@@ -106,21 +108,26 @@ export default function PromoIndex({ products, promo}) {
 
   // --- toggle select all / preselect logic ---
   const toggleSelectAll = (checked) => {
+    const list = checked ? products.map((p) => p.id) : [];
     setSelectAll(checked);
-    setSelectedProducts(checked ? products.map((p) => p.id) : []);
-  };
+    setSelectedProducts(list);
+    setData("produk_ids", list);  // WAJIB
+};
+
 
   // initialize pre-selected products when products prop changes (e.g., edit)
   useEffect(() => {
+  if (promo) {
     const preSelected = products
-      .filter((p) => p.id_promo !== null) // or use p.id_promo === promo?.id if you want only current promo
+      .filter((p) => p.id_promo === promo.id) 
       .map((p) => p.id);
 
     setSelectedProducts(preSelected);
-    setSelectAll(preSelected.length === products.length && products.length > 0);
-    // also set preview to promo foto if available
-    setPreview(promo?.foto || null);
-  }, [products, promo]);
+    setData("produk_ids", preSelected);  // sinkron form
+    setSelectAll(preSelected.length === products.length);
+  }
+}, [products]);
+
 
   // keep selectAll in sync when selectedProducts change
   useEffect(() => {
@@ -269,6 +276,7 @@ export default function PromoIndex({ products, promo}) {
             <Grid.Col span={6}>
             <Textarea
                 label="Deskripsi"
+                autosize
                 placeholder="Deskripsi promo"
                 value={data.deskripsi}
                 onChange={(e) => setData("deskripsi", e.target.value)}
@@ -310,7 +318,7 @@ export default function PromoIndex({ products, promo}) {
                 withIndicators
                 draggable
                 loop
-                height={260}
+                height={"auto"}
                 w="60%"
                 styles={{
                     control: {

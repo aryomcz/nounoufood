@@ -15,3 +15,7 @@
     font-display: auto;
     src: url('/fonts/Poppins.woff') format('Woff');
 }
+
+html {
+    scroll-behavior: smooth;
+}

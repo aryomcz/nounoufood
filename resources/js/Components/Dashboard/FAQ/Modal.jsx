@@ -35,6 +35,7 @@ export default function FAQModal({
     >
       <Textarea
         label="Pertanyaan"
+        autosize
         placeholder="Pertanyaan"
         value={form.data.pertanyaan}
         onChange={(e) =>  form.setData("pertanyaan", e.currentTarget.value )}
