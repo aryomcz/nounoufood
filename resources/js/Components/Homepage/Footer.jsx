@@ -1,9 +1,10 @@
-import React from 'react'
+import React from 'react';
 import { Title, Text } from '@mantine/core';
 import { Icon } from '@iconify/react';
-// import { IconMapPin, IconBrandWhatsapp, IconMail, IconBrandInstagram } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
+    const { t } = useTranslation();
     const backgroundImageUrl = '/Footer.png'; 
 
     return (
@@ -23,16 +24,9 @@ export default function Footer() {
                         
                         {/* Kolom 1: Logo, Judul, Alamat & Kontak */}
                         <div className="space-y-6">
-                            {/* Logo */}
-                            <img 
-                                src="/logo.png" 
-                                alt="Logo NounouFood" 
-                                className="w-40 h-auto" 
-                            />
-                            
-                            {/* Judul "Pasti Enaknya!" */}
+                            <img src="/logo.png" alt="Logo NounouFood" className="w-40 h-auto" />
                             <Title order={3} className="text-gray-900 !text-2xl font-bold">
-                                Pasti Enaknya!
+                                {t('pasti_enaknya', 'Pasti Enaknya!')}
                             </Title>
 
                             <div className="md:hidden flex flex-col md:flex-row md:items-start gap-15 md:gap-20">
@@ -47,7 +41,7 @@ export default function Footer() {
 
                                 {/* WhatsApp */}
                                 <div className="flex items-center space-x-2 mt-10">
-                                   <Icon icon="ic:baseline-whatsapp" width={24} />
+                                    <Icon icon="ic:baseline-whatsapp" width={24} />
                                     <a 
                                         href="https://wa.me/6281936110396" 
                                         className="text-gray-900 hover:text-[#E43535] transition-colors whitespace-nowrap text-sm cursor-pointer" 
@@ -88,90 +82,90 @@ export default function Footer() {
                            
                         {/* Kolom 2: Navigasi */}
                         <div className="space-y-4">
-                            <Title order={4} className="font-bold text-gray-900 !text-xl mb-4">Navigasi</Title>
+                            <Title order={4} className="font-bold text-gray-900 !text-xl mb-4">{t('navigasi', 'Navigasi')}</Title>
                             <ul className="space-y-3">
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Home</a></li>
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Pages</a></li>
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Tentang Kami</a></li>
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Services</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('home')}</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('pages', 'Pages')}</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('tentang_kami')}</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('services', 'Services')}</a></li>
                             </ul>
                         </div>
 
                         {/* Kolom 3: Quick Link */}
                         <div className="space-y-4">
-                            <Title order={4} className="font-bold text-gray-900 !text-xl mb-4">Quick Link</Title>
+                            <Title order={4} className="font-bold text-gray-900 !text-xl mb-4">{t('quick_link', 'Quick Link')}</Title>
                             <ul className="space-y-3">
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Contact Us</a></li>
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">FAQs</a></li>
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Cart</a></li>
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Pages</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('contact_us', 'Contact Us')}</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('faqs', 'FAQs')}</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('keranjang')}</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('pages', 'Pages')}</a></li>
                             </ul>
                         </div>
 
                         {/* Kolom 4: Marketplace */}
                         <div className="space-y-4">
-                            <Title order={4} className="font-bold text-gray-900 !text-xl mb-4">Marketplace</Title>
+                            <Title order={4} className="font-bold text-gray-900 !text-xl mb-4">{t('marketplace', 'Marketplace')}</Title>
                             <ul className="space-y-3">
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">Shopee</a></li>
-                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">TikTok</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('shopee', 'Shopee')}</a></li>
+                                <li><a href="#" className="text-gray-900 font-semibold hover:text-[#E43535] transition-colors">{t('tiktok', 'TikTok')}</a></li>
                             </ul>
                         </div>  
                     </div>
-                    {/* Alamat */}
-                     <div className='w-full hidden md:flex  justify-between gap-2 h-20'>
-                                <div className="flex gap-2 h-full items-center flex-shrink-0">
-                                    <Icon icon="akar-icons:location" width={24} height={24}/>
-                                    <p className="text-gray-900 leading-relaxed text-xs lg:text-base">
-                                        Botani Square Lantai UG, <br /> Yogya Junction Dramaga,<br />
+
+                    {/* Alamat Desktop */}
+                    <div className='w-full hidden md:flex justify-between gap-2 h-20'>
+                        <div className="flex gap-2 h-full items-center flex-shrink-0">
+                            <Icon icon="akar-icons:location" width={24} height={24}/>
+                            <p className="text-gray-900 leading-relaxed text-xs lg:text-base">
+                                Botani Square Lantai UG, <br /> Yogya Junction Dramaga,<br />
                                         Home Production <br /> (Taman Cimanggu, Kota Bogor)
-                                    </p>
-                                </div>
+                            </p>
+                        </div>
 
-                                {/* WhatsApp */}
-                                <div className="flex gap-2 h-full items-center">
-                                    <Icon icon="ic:baseline-whatsapp" width={24} />
-                                    <a 
-                                        href="https://wa.me/6281936110396" 
-                                        className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                    >
-                                        +62 819-3611-0396
-                                    </a>
-                                </div>
+                        {/* WhatsApp */}
+                        <div className="flex gap-2 h-full items-center">
+                            <Icon icon="ic:baseline-whatsapp" width={24} />
+                            <a 
+                                href="https://wa.me/6281936110396" 
+                                className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                            >
+                                +62 819-3611-0396
+                            </a>
+                        </div>
 
-                                {/* Email */}
-                                <div className="flex gap-2 h-full items-center">
-                                    <Icon icon="lucide:mail" width={24} />
-                                    <a 
-                                        href="mailto:Nastiticahayagemilang@gmail.com" 
-                                        className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer text-wrap"
-                                        target="_blank" 
-                                        // rel="noopener noreferrer"
-                                    >
-                                        Nastiticahayagemilang@gmail.com
-                                    </a>
-                                </div>
+                        {/* Email */}
+                        <div className="flex gap-2 h-full items-center">
+                            <Icon icon="lucide:mail" width={24} />
+                            <a 
+                                href="mailto:Nastiticahayagemilang@gmail.com" 
+                                className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer text-wrap"
+                                target="_blank"
+                            >
+                                Nastiticahayagemilang@gmail.com
+                            </a>
+                        </div>
 
-                                {/* Instagram */}
-                                <div className="flex gap-2 h-full items-center">
-                                    <Icon icon="lucide:instagram" width={24}/>
-                                    <a 
-                                        href="https://instagram.com/Danggedang_official" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer"
-                                    >
-                                        @Danggedang_official
-                                    </a>
-                            </div>
-                            </div>
+                        {/* Instagram */}
+                        <div className="flex gap-2 h-full items-center">
+                            <Icon icon="lucide:instagram" width={24}/>
+                            <a 
+                                href="https://instagram.com/Danggedang_official" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-gray-900 hover:text-[#E43535] transition-colors text-xs lg:text-base cursor-pointer"
+                            >
+                                @Danggedang_official
+                            </a>
+                        </div>
+                    </div>
                     
                     {/* Copyright Bar */}
                     <div className="border-t border-gray-700 pt-6 mt-8">
                         <div className="text-center">
                             <Text className="text-gray-700 text-sm">
-                                Copyright © {new Date().getFullYear()} NouNouFood.id. All rights reserved.
+                                {`Copyright © ${new Date().getFullYear()} NouNouFood.id. All rights reserved.`}
                             </Text>
                         </div>
                     </div>

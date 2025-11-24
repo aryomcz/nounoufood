@@ -4,6 +4,8 @@ import { Group, Burger, Drawer, Button } from '@mantine/core';
 import { usePage, Link, router } from '@inertiajs/react';
 import classes from '../../../css/Navbar.module.css'; // import CSS
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
+import { changeLanguage } from '@/i18n';
 
 export default function Navbar() {
     const { auth } = usePage().props;
@@ -11,6 +13,7 @@ export default function Navbar() {
     const [opened, setOpened] = useState(false);
     const SCROLL_THRESHOLD = 80;
     const { t, i18n } = useTranslation();
+    const [langDropdown, setLangDropdown] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
@@ -129,6 +132,34 @@ export default function Navbar() {
                     </motion.div>
                 </motion.div>
             </Drawer>
+               <div className="fixed bottom-4 right-4 z-50">
+                <div className="relative bg-white border border-solid border-primary-main rounded-full">
+                    <Icon
+                        icon="mdi:earth"
+                        className="cursor-pointer text-gray-700 hover:text-orange-600"
+                        width={36}
+                        height={36}
+                        style={{ color: "rgb(250 177 47 / var(--tw-border-opacity, 1))" }}
+                        onClick={() => setLangDropdown(!langDropdown)}
+                    />
+                    {langDropdown && (
+                        <div className="absolute bottom-12 right-0 w-28 bg-white shadow-lg rounded-md overflow-hidden z-50">
+                            <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {changeLanguage('id'); setLangDropdown(false)}}
+                            >
+                                Indonesia
+                            </button>
+                            <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {changeLanguage('en'); setLangDropdown(false)}}
+                            >
+                                English
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
         </>
     );
 }
