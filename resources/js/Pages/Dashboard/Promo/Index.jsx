@@ -21,8 +21,10 @@ import classes from '../../../../css/Demo.module.css';
 import { DatePickerInput } from "@mantine/dates";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { Icon } from "@iconify/react";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { useForm } from "@inertiajs/react";
+import { notifications } from "@mantine/notifications";
+
 
 
 export default function PromoIndex({ products, promo}) {
@@ -160,6 +162,18 @@ export default function PromoIndex({ products, promo}) {
     tanggal_selesai: formatDateForBackend(data.tanggal_selesai),
   }));
 
+const { notification } = usePage().props;
+
+useEffect(() => {
+  if (notification) {
+    notifications.show({
+      title: notification.title,
+      message: notification.message,
+      color: notification.color ?? "green",
+      icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+    });
+  }
+}, [notification]);
   // --- submit ---
   const submitPromo = () => {
   post(route("promo.store"), {

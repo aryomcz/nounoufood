@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('harga');
             $table->integer('qty');
             $table->boolean('is_best_seller')->default(false);
+            $table->integer('stok')->default(0);
             $table->longText('deskripsi')->nullable();
             $table->longText('foto');
             $table->unsignedBigInteger('id_type')->nullable();

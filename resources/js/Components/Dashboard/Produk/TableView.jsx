@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { router } from "@inertiajs/react";
+import React, { useState, useMemo, useEffect } from "react";
+import { router, usePage } from "@inertiajs/react";
 import {
   Table,
   Checkbox,
@@ -13,6 +13,8 @@ import {
 } from "@mantine/core";
 import { Icon } from "@iconify/react";
 import ProdukModal from "./Modal";
+import QuantitySelector from "./QuantitySelector";
+import { notifications } from "@mantine/notifications";
 
 export default function TableView({ produk, tipeProduk }) {
   const [search, setSearch] = useState("");
@@ -32,6 +34,7 @@ export default function TableView({ produk, tipeProduk }) {
     id: null,
     nama: "",
     qty: "",
+    stok: 0,
     harga: "",
     deskripsi: "",
     id_type: "",
@@ -48,6 +51,7 @@ const openEdit = (item) => {
     id: item.id,
     nama: item.nama,
     qty: item.qty,
+    stok: item.stok,
     harga: item.harga,
     deskripsi: item.deskripsi,
     id_type: item.id_type.toString(), // penting!
@@ -57,20 +61,34 @@ const openEdit = (item) => {
   setFormOpen(true);
 };
 
+const { notification } = usePage().props;
+
+useEffect(() => {
+  if (notification) {
+    notifications.show({
+      title: notification.title,
+      message: notification.message,
+      color: notification.color ?? "green",
+      icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+    });
+  }
+}, [notification]);
+
+
  const submitForm = (form) => {
   if (formMode === "create") {
     form.post(route("products.store"), {
       forceFormData: true,   // ⭐ WAJIB untuk upload foto
       onSuccess: () => {
-        setFormOpen(false);
-        form.reset();
-      },
+        setFormOpen(false)
+      }
     });
   } else {
     form.post(route("products.update", form.data.id), {
       method: "put",
       forceFormData: true,
-      onSuccess: () => setFormOpen(false),
+      onSuccess: () => {
+        setFormOpen(false);}
     });
   }
 };
@@ -126,9 +144,15 @@ const openEdit = (item) => {
         setSelected([]);
         setDeleteId(null);
         setConfirmOpen(false);
-      },
+      }
     });
   };
+
+  const updateStok = (id, stok) => {
+      router.patch(route("products.stok", id), {
+          stok: stok,
+      });
+    };
 
   const formatRupiah = (num) =>
   new Intl.NumberFormat("id-ID", {
@@ -138,7 +162,7 @@ const openEdit = (item) => {
   }).format(num || 0);
 
   return (
-    <div>
+    <div className="w-full">
       <Group justify="end" mb="md">
         <Group>
           <TextInput
@@ -166,7 +190,7 @@ const openEdit = (item) => {
         </Group>
       </Group>
 
-      <div className="bg-white border shadow-sm rounded-xl p-1">
+      <div className="bg-white border shadow-sm rounded-xl p-1 w-full overflow-x-auto min-w-[840px]">
         <Table highlightOnHover withColumnBorders={false} withTableBorder={false} verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>
@@ -189,6 +213,7 @@ const openEdit = (item) => {
               <Table.Th style={{ textAlign: "center" }}>No</Table.Th>
               <Table.Th style={{ textAlign: "center" }}>Nama</Table.Th>
               <Table.Th style={{ textAlign: "center" }}>Berat</Table.Th>
+              <Table.Th style={{ textAlign: "center" }}>Stok</Table.Th>
               <Table.Th style={{ textAlign: "center" }}>Harga</Table.Th>
               <Table.Th style={{ textAlign: "center" }}>Best Seller</Table.Th>
 
@@ -223,6 +248,13 @@ const openEdit = (item) => {
                   <Table.Td>{(page - 1) * itemsPerPage + i + 1}</Table.Td>
                   <Table.Td>{item.nama}</Table.Td>
                   <Table.Td>{item.qty} gr</Table.Td>
+                  <Table.Td style={{ display:"flex", justifyContent:"center", alignContent:"center"}}>
+                     <QuantitySelector
+                        productId={item.id}
+                        initialStok={item.stok}
+                        onUpdateStok={updateStok}
+                      />
+                  </Table.Td>
                   <Table.Td>{formatRupiah(item.harga)}</Table.Td>
                   <Table.Td className="flex justify-center">
                     <Checkbox

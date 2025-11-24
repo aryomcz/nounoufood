@@ -17,7 +17,9 @@ import {
 import { DatePickerInput, YearPickerInput } from "@mantine/dates";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { Icon } from "@iconify/react";
-import { router, useForm } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
+import { notifications } from "@mantine/notifications";
+
 
 export default function CompanyIndex({company}) {
 
@@ -133,6 +135,20 @@ const toYearNumber = (value) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+const { notification } = usePage().props;
+
+useEffect(() => {
+  if (notification) {
+    notifications.show({
+      title: notification.title,
+      message: notification.message,
+      color: notification.color ?? "green",
+      icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+    });
+  }
+}, [notification]);
+
+
 
   // --- submit ---
  const submitCompany = () => {
@@ -143,7 +159,7 @@ const toYearNumber = (value) => {
 };
 
   return (
-     <div className="bg-white border shadow-sm rounded-xl p-1">
+     <div className="bg-white border shadow-sm rounded-xl p-1 overflow-x-auto min-w-[840px] w-full">
         <Stack p={20}>
         {/* FOTO */}
         <Stack align="center" mb={10}>

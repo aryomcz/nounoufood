@@ -31,6 +31,7 @@ export default function ProdukModal({
     id: null,
     nama: "",
     qty: "",
+    stok: 0,
     harga: "",
     deskripsi: "",
     id_type: "",
@@ -125,7 +126,7 @@ export default function ProdukModal({
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={handleClose}
       centered
       radius="lg"
       size="xl"
@@ -191,6 +192,13 @@ export default function ProdukModal({
               }))}
               onChange={(val) => form.setData("id_type", val)}
             />
+
+            <NumberInput
+              label="Stok Produk"
+              value={form.data.stok}
+              error={form.errors.stok}
+              onChange={(val) => form.setData("stok", val)}
+            />
           </Stack>
         </Grid.Col>
 
@@ -240,7 +248,7 @@ export default function ProdukModal({
 
       <Group justify="center" mt="lg">
         <Button
-          onClick={() => onSubmit(form)}
+          onClick={handleSubmit}
           loading={form.processing}
         >
           {mode === "create" ? "Simpan" : "Update"}

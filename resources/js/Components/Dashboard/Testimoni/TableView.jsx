@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { router } from "@inertiajs/react";
+import React, { useState, useMemo, useEffect } from "react";
+import { router, usePage } from "@inertiajs/react";
 import {
   Table,
   Checkbox,
@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { Icon } from "@iconify/react";
 import TestiModal from "./Modal";
+import { notifications } from "@mantine/notifications";
 
 export default function TableView({ testi }) {
   const [search, setSearch] = useState("");
@@ -49,6 +50,19 @@ const openEdit = (item) => {
   setFormOpen(true);
 };
 
+const { notification } = usePage().props;
+
+useEffect(() => {
+  if (notification) {
+    notifications.show({
+      title: notification.title,
+      message: notification.message,
+      color: notification.color ?? "green",
+      icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+    });
+  }
+}, [notification]);
+
   const submitForm = (form) => {
 
     if (formMode === "create") {
@@ -56,13 +70,13 @@ const openEdit = (item) => {
        onSuccess: () => {
           setFormOpen(false);
           form.reset();
-        },
+        }
       });
     } else {
       form.put(route("testimoni.update", form.data.id), {
         onSuccess: () => {
           setFormOpen(false);
-        },
+        }
       });
     }
   };
@@ -143,7 +157,7 @@ const openEdit = (item) => {
         </Group>
       </Group>
 
-      <div className="bg-white border shadow-sm rounded-xl p-1">
+      <div className="bg-white border shadow-sm rounded-xl p-1 w-full overflow-x-auto min-w-[840px]">
         <Table highlightOnHover withColumnBorders={false} withTableBorder={false} verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>

@@ -44,7 +44,7 @@ class StoreController extends Controller
 
         Store::create($data);
 
-        return back()->with('success','Toko ditambahkan');
+        return notif_success("Toko berhasil ditambahkan");
     }
 
     public function update(Request $request, $id)
@@ -71,7 +71,7 @@ class StoreController extends Controller
             $validated['url_map_embed'] = $mapUrl;
             $type->update($validated);
 
-            return back()->with('success', 'Toko berhasil diperbarui.');
+            return notif_success("Toko berhasil diubah");
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal memperbarui Toko.');
         }
@@ -87,6 +87,6 @@ class StoreController extends Controller
 
         Store::whereIn('id', $ids)->delete();
 
-        return back()->with('success', 'Tipe produk berhasil dihapus.');
+        return notif_success("Toko berhasil dihapus");
     }
 }

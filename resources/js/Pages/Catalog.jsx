@@ -7,8 +7,11 @@ import classes from "../../css/Product.module.css"
 import GuestLayout from "@/Layouts/GuestLayout";
 import { useForm, usePage } from "@inertiajs/react";
 import { motion, LayoutGroup, AnimatePresence } from "motion/react";
+import { useTranslation } from "react-i18next";
+import {notifications} from "@mantine/notifications";
 
 export default function Catalog(props) {
+    const { t } = useTranslation();
     const autoplay = useRef(Autoplay({ delay: 4000 }));
     const carouselRef = useRef(null);
     const [opened, setOpened] = useState(false);
@@ -53,10 +56,25 @@ export default function Catalog(props) {
       });
       setOpened(true);
     };
+
+    const { notification } = usePage().props;
+    
+    useEffect(() => {
+      if (notification) {
+        notifications.show({
+          title: notification.title,
+          message: notification.message,
+          color: notification.color ?? "green",
+          icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+        });
+      }
+    }, [notification]);
   
     const submitCart = () => {
       form.post(route("cart.store"), {
-        onSuccess: () => setOpened(false),
+        onSuccess: () => {
+          setOpened(false);
+           }
       });
     };
   
@@ -66,17 +84,6 @@ export default function Catalog(props) {
           setConfirmModal(false);
           setAlamatModal(false);
           setWaDrawer(false);
-  
-          
-          const notif = page.props.notification;
-          notifications.show({
-            title: notif.title,
-            message: notif.message,
-            color: notif.color ?? "blue",
-            icon: notif.success
-              ? <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
-              : <Icon icon="material-symbols:cancel-outline-rounded" width={24} />
-          });
   
            const pesan =
               `Format Pemesanan Produk Nounoufood\n\n`+
@@ -132,26 +139,25 @@ export default function Catalog(props) {
   return (
     <LayoutGroup>
     <GuestLayout>
-        <div className="w-full flex flex-col justify-center items-center py-10 gap-2 md:gap-10">
-            {props?.produk.filter((p) => p.products != null).map((p) => 
+        <div className="w-full flex flex-col justify-center items-center py-10 gap-2 md:gap-10 px-4 sm:px-6 xl:px-24">
+            {props?.produk?.filter((p) => p.products != null).map((p) => 
                 <div key={p.id} className="text-center flex flex-col gap-2 w-full justify-center items-center">
-                <h1 className="font-poppins-2 font-semibold text-xl lg:text-2xl mt-10">{p.nama}</h1>
+                <h1 className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{p.nama}</h1>
                 <div ref={carouselRef} className="w-full flex justify-center items-center">
                <Carousel
-                    slideSize="240px" // ukuran tetap
-                    w={"100%"}
-                    height={"auto"}
-                    slideGap="md"
-                    align="center"
-                    classNames={classes}
-                    slidesToScroll={4}
-                    withIndicators
-                    withControls={false}
-                    loop
-                    plugins={[autoplay.current]}
-                    emblaOptions={{ align: 'center'}}
-                    styles={{ container: { justifyContent:"center" } }}
-                >
+                slideSize="256px"
+                w={"100%"}
+                height="auto"
+                slideGap="md"
+                align="center"
+                classNames={classes}
+                withIndicators
+                withControls={false}
+                loop
+                plugins={[autoplay.current]}
+                emblaOptions={{ align: 'center'}}
+                // styles={{ container: { justifyContent:"center" } }}
+              >
                     {p.products.map((p) => (
                     <Carousel.Slide
                 key={p.id}
@@ -162,12 +168,12 @@ export default function Catalog(props) {
                   position: "relative"
                 }}
               >
-                        <motion.div
+                <motion.div
                   layoutId={`card-${p.id}`}
                   onClick={() => { setSelectedId(p.id); setPreviewProduct(p); }}
                   className="cursor-pointer"
                 >
-                  <Card shadow="xl" padding="lg" radius="lg" h="360px" w="100%" maw="240px" ta="start" withBorder style={{ borderRadius: "20px", position: "relative" }}>
+                  <Card shadow="xl" padding="lg" radius="lg" h="360px" w="100%" maw="256px" ta="start" withBorder style={{ borderRadius: "20px", position: "relative" }}>
                     <Card.Section>
                       <motion.img
                         src={p.foto}
@@ -209,18 +215,14 @@ export default function Catalog(props) {
                             </div>
 
                             <div className="flex items-center justify-between mt-3 gap-2 w-full">
-                            <Button color="orange" leftSection={<Icon icon="mdi:cart-plus" width={16} />} radius="lg" size="xs" onClick={() => openDrawer(p)} className="flex-1">
-                                Tambah
+                            <Button color="orange" leftSection={<Icon icon="mdi:cart-plus" width={16} />} radius="lg" size="xs" onClick={e => { e.stopPropagation(); openDrawer(p); }} className="flex-1">
+                                {t('button_keranjang')}
                             </Button>
 
                             <Button color="green" leftSection={<Icon icon="ic:baseline-whatsapp" width={16} />} radius="lg" size="xs" className="flex-1"
-                                onClick={() => {
-                                setSelectedProduct(p);
-                                form.setData({ id_produk: p.id, qty: 1, alamat: alamatPelanggan });
-                                setWaDrawer(true);
-                                }}
+                                onClick={e => { e.stopPropagation(); setSelectedProduct(p); form.setData({ id_produk: p.id, qty:1, alamat: alamatPelanggan }); setWaDrawer(true); }}
                             >
-                                Pesan
+                               {t('button_pesan')}
                             </Button>
                             </div>
                         </Stack>
@@ -248,15 +250,15 @@ export default function Catalog(props) {
       </Drawer>
 
       {/* Drawer WhatsApp */}
-      <Drawer opened={waDrawer} onClose={() => setWaDrawer(false)} title="Konfirmasi Pesanan" position="right" padding="lg">
+      <Drawer opened={waDrawer} onClose={() => setWaDrawer(false)} title={t('tambah_keranjang')} position="right" padding="lg">
         {selectedProduct && (
           <div className="flex flex-col gap-4 justify-center">
             <Image src={selectedProduct.foto} w={"100%"} maw={"320px"} h={"auto"} />
             <p className="font-medium">{selectedProduct.nama}</p>
-            <NumberInput label="Jumlah" min={1} value={form.data.qty} onChange={(v) => form.setData("qty", v)} />
-            <Text>Masukkan alamat pengiriman:</Text>
-            <Textarea placeholder="Alamat..." value={form.data.alamat} onChange={(e) => form.setData("alamat", e.target.value)} />
-            <Button color="orange" mt="sm" onClick={() => setConfirmModal(true)}>Lanjutkan Pesanan</Button>
+            <NumberInput label={t('jumlah')} min={1} value={form.data.qty} onChange={(v) => form.setData("qty", v)} />
+            <Text>{t('alamat')}</Text>
+            <Textarea placeholder={t('alamat')} value={form.data.alamat} onChange={(e) => form.setData("alamat", e.target.value)} />
+            <Button color="orange" mt="sm" onClick={() => setConfirmModal(true)}>{t('lanjutkan_pesanan')}</Button>
           </div>
         )}
       </Drawer>
@@ -274,9 +276,17 @@ export default function Catalog(props) {
                       <motion.div
                         layoutId={`card-${previewProduct.id}`}
                         transition={{ layout:{duration:0.35, bounce:0} }}
-                        className="bg-white rounded-2xl p-5 w-full max-w-md shadow-xl"
+                        className="bg-white rounded-2xl p-5 w-full max-w-md shadow-xl relative"
                         onClick={e => e.stopPropagation()}
                       >
+                        <Icon
+                          icon="ic:round-close"
+                          className="absolute top-3 right-3 cursor-pointer text-gray-600 hover:text-gray-900 z-20 bg-secondary-main rounded-full"
+                          style={{ color:"white" }}
+                          width={24}
+                          height={24}
+                          onClick={() => setPreviewProduct(false)}
+                        /> 
                         <motion.img src={previewProduct.foto} layoutId={`image-${previewProduct.id}`} transition={{ layout:{duration:0.35,bounce:0} }} className="w-full h-56 object-cover rounded-xl" />
                         <motion.h2 layoutId={`title-${previewProduct.id}`} transition={{ layout:{duration:0.35,bounce:0} }} className="text-lg font-semibold mt-4">{previewProduct.nama}</motion.h2>
       
@@ -294,21 +304,21 @@ export default function Catalog(props) {
                           )}
                         </div>
       
-                        {previewProduct.qty && <p className="text-sm text-gray-700 mt-3"><span className="font-semibold">Berat:</span> {previewProduct.qty}gr</p>}
-                        <p className="text-gray-600 text-sm mt-4 leading-relaxed">{previewProduct.deskripsi ?? "Deskripsi belum tersedia."}</p>
+                        {previewProduct.qty && <p className="text-sm text-gray-700 mt-3"><span className="font-semibold">{t('berat')}:</span> {previewProduct.qty}gr</p>}
+                        <p className="text-gray-600 text-sm mt-4 leading-relaxed">{previewProduct.deskripsi ?? t('deskripsi_belum')}</p>
       
                         {previewProduct.halal && (
                           <div className="flex items-center gap-2 mt-4 p-3 bg-green-50 rounded-xl border border-green-200">
                             <img src="/images/halal-mui.png" alt="Halal MUI" className="w-10 h-10 object-contain" />
                             <div>
-                              <p className="text-green-700 font-semibold text-sm">Sertifikat Halal MUI</p>
-                              <p className="text-xs text-gray-600">Nomor: {previewProduct.halal.no_sertifikasi ?? previewProduct.halal}</p>
+                              <p className="text-green-700 font-semibold text-sm">{t('sertifikat_halal')}</p>
+                              <p className="text-xs text-gray-600">{t('nomor')}: {previewProduct.halal.no_sertifikasi ?? previewProduct.halal}</p>
                             </div>
                           </div>
                         )}
       
                         <div className="flex justify-end mt-6">
-                          <Button color="gray" variant="light" onClick={() => setPreviewProduct(null)}>Tutup</Button>
+                          {/* <Button color="red" variant="default" onClick={() => setPreviewProduct(null)}>{t('tutup')}</Button> */}
                         </div>
                       </motion.div>
                     </motion.div>

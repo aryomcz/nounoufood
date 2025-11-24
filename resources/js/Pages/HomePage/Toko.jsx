@@ -4,19 +4,21 @@ import Autoplay from "embla-carousel-autoplay";
 import { Icon } from "@iconify/react";
 import { useRef } from "react";
 import classes from "../../../css/Hero.module.css"
+import { useTranslation } from "react-i18next";
 
 export default function Toko({toko}) {
-    const autoplay = useRef(Autoplay({ delay: 4000 }));
+  const {t} = useTranslation();
+  const autoplay = useRef(Autoplay({ delay: 4000 }));
   return (
     <div id="toko" className="w-full flex flex-col justify-center items-center py-10 gap-2 md:gap-10">
       <div className="text-center flex flex-col gap-2">
-      <h1 className="font-poppins-2 font-semibold text-xl lg:text-2xl mt-10">Kunjungi Toko Offline Kami</h1>
-      <p className="font-poppins text-sm lg:text-base capitalize">Tempat Kamu Bisa Mengunjungi kami </p>
+      <h1 className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{t('toko_title')}</h1>
+      <p className="font-poppins text-sm lg:text-lg capitalize">{t('toko_subtitle')} </p>
       </div>
       <Carousel
-        slideSize={{ base:"100%", sm:"50%", md:"38%", lg:"25%" }}
-        w={{ base: '75%', sm: '75%', md: '75%' }}
-        height={"auto"}
+        slideSize="256px"
+        w={"100%"}
+        height="auto"
         slideGap="md"
         align="center"
         classNames={classes}
@@ -26,16 +28,17 @@ export default function Toko({toko}) {
         loop
         plugins={[autoplay.current]}
         emblaOptions={{ align: 'center'}}
+        // styles={{ container: {justifyContent:"center"} }}
       >
-        {toko.map((p) => (
+        {toko?.map((p) => (
             <Carousel.Slide key={p.id} className="py-10">
               <Card
                 shadow="xl"
                 padding="lg"
                 radius="lg"
-                h="auto"
-                mih="320px"
-                w="100%"
+                h="360px" 
+                w="100%" 
+                maw="256px"
                 ta="start"
                 withBorder
                 style={{ borderRadius: "20px", position: "relative" }}
@@ -44,8 +47,8 @@ export default function Toko({toko}) {
                   <iframe src={p.url_map_embed} className="w-full h-[140px]" ></iframe>
                   </Card.Section>
 
-                  <Stack>
-                  <div>
+                  <Stack h={"100%"} justify="space-between">
+                  <div className="flex flex-col gap-2">
                 <Text fw={600} mt="md" size="md">
                   {p.nama}
                 </Text>
@@ -64,7 +67,7 @@ export default function Toko({toko}) {
                     component="a"
                     href={p.url_map}
                   >
-                    Kunjungi
+                    {t('button_kunjungi')}
                   </Button>
                 </Stack>
                 {/* NAMA PRODUK */}

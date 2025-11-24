@@ -55,13 +55,14 @@ class CompanyProfileController extends Controller
         // 📌 JIKA ADA → UPDATE
         if ($company) {
             $company->update($validated);
+            return notif_success("Company Profile berhasil diubah");
         } 
         // 📌 JIKA BELUM ADA → CREATE
         else {
             $company = CompanyProfile::create($validated);
+            return notif_success("Company Profile ditambahkan");
         }
 
-        return back()->with('success','Company Profile dibuat');
     }
 
 }

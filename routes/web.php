@@ -44,8 +44,8 @@ Route::prefix('/dashboard')->middleware(['auth', 'verified', 'role:admin'])->gro
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus']);
 
     Route::get('/products', [ProductController::class, 'index'])->name('dashboard.product');
-    Route::patch('/products/{id}/best-seller', [ProductController::class, 'updateBestSeller'])
-    ->name('products.best-seller');
+    Route::patch('/products/{id}/best-seller', [ProductController::class, 'updateBestSeller'])->name('products.best-seller');
+    Route::patch('/products/{id}/stok', [ProductController::class, 'updateStok'])->name('products.stok');
     Route::post('/products/create', [ProductController::class, 'store'])->name('products.store');
     Route::post('/products/update/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/delete', [ProductController::class, 'destroy'])->name('products.delete');

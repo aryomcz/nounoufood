@@ -29,7 +29,7 @@ class ReviewController extends Controller
 
         Review::create($data);
 
-        return back()->with('success','Testimoni ditambahkan');
+        return notif_success("Testimoni berhasil ditambahkan");
     }
 
     public function update(Request $request, $id)
@@ -44,7 +44,7 @@ class ReviewController extends Controller
             $type = Review::findOrFail($id);
             $type->update($validated);
 
-            return back()->with('success', 'Testimoni berhasil diperbarui.');
+            return notif_success("Testimoni berhasil diubah");
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal memperbarui Testimoni.');
         }
@@ -60,6 +60,6 @@ class ReviewController extends Controller
 
         Review::whereIn('id', $ids)->delete();
 
-        return back()->with('success', 'Tipe produk berhasil dihapus.');
+        return notif_success("Testimoni berhasil dihapus");
     }
 }

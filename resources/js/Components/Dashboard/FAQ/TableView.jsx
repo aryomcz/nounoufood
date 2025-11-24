@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import {
   Table,
@@ -13,6 +13,8 @@ import {
 } from "@mantine/core";
 import { Icon } from "@iconify/react";
 import FAQModal from "./Modal";
+import { notifications } from "@mantine/notifications";
+import { usePage } from "@inertiajs/react";
 
 export default function TableView({ faq }) {
   const [search, setSearch] = useState("");
@@ -37,19 +39,32 @@ export default function TableView({ faq }) {
     setFormOpen(true);
   };
 
+  const { notification } = usePage().props;
+
+  useEffect(() => {
+    if (notification) {
+      notifications.show({
+        title: notification.title,
+        message: notification.message,
+        color: notification.color ?? "green",
+        icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+      });
+    }
+  }, [notification]);
+
   const submitForm = (form) => {
     if (formMode === "create") {
       form.post(route("faq.store"), {
         onSuccess: () => {
           setFormOpen(false);
           form.reset();
-        },
+        }
       });
     } else {
       form.put(route("faq.update", form.data.id), {
         onSuccess: () => {
           setFormOpen(false);
-        },
+        }
       });
     }
   };
@@ -97,7 +112,7 @@ export default function TableView({ faq }) {
         setSelected([]);
         setDeleteId(null);
         setConfirmOpen(false);
-      },
+       }
     });
   };
 
@@ -130,7 +145,7 @@ export default function TableView({ faq }) {
         </Group>
       </Group>
 
-      <div className="bg-white border shadow-sm rounded-xl p-1">
+      <div className="bg-white border shadow-sm rounded-xl p-1 w-full overflow-x-auto min-w-[840px]">
         <Table highlightOnHover withColumnBorders={false} withTableBorder={false} verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>

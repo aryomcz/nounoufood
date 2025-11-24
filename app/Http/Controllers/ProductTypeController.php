@@ -35,7 +35,7 @@ class ProductTypeController extends Controller
         try {
             ProductType::create($validated);
 
-            return back()->with('success', 'Tipe produk berhasil dibuat.');
+            return notif_success("Tipe produk berhasil ditambahkan");
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal membuat tipe produk.');
         }
@@ -56,7 +56,7 @@ class ProductTypeController extends Controller
             $type = ProductType::findOrFail($id);
             $type->update($validated);
 
-            return back()->with('success', 'Tipe produk berhasil diperbarui.');
+            return notif_success("Tipe produk berhasil diubah");
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal memperbarui tipe produk.');
         }
@@ -84,7 +84,8 @@ class ProductTypeController extends Controller
             ProductType::whereIn('id', $ids)->delete();
         });
 
-        return back()->with('success', 'Tipe produk berhasil dihapus.');
+        return notif_success("Tipe produk berhasil dihapus");
+
     }
     
 }

@@ -12,6 +12,7 @@ import { Icon } from "@iconify/react";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 import { router } from "@inertiajs/react";
+import { notifications } from "@mantine/notifications";
 
 const formatRupiah = (num) =>
   new Intl.NumberFormat("id-ID", {
@@ -34,13 +35,22 @@ export default function TableView({ data = [] }) {
       { status },
       {
         preserveScroll: true,
-        onSuccess: () => setOpened(null),
+        onSuccess: (page) => {
+          setOpened(null);
+                  const notif = page.props.notification;
+                   notifications.show({
+                    title: notif.title,
+                    message: notif.message,
+                    color: notif.color ?? "green",
+                    icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+                  });
+        },
       }
     );
   };
 
   return (
-    <div className="bg-white border shadow-sm rounded-xl p-1">
+    <div className="bg-white border shadow-sm rounded-xl p-1 w-full overflow-x-auto min-w-[840px]">
       <Table highlightOnHover withColumnBorders={false}
   withTableBorder={false}
  verticalSpacing="sm">

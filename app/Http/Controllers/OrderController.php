@@ -40,12 +40,12 @@ class OrderController extends Controller
   public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|integer|in:1,2,3',
+            'status' => 'required|integer|in:0,1,2',
         ]);
 
         $order->update(['status' => $request->status]);
 
-        return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui.');
+        return notif_success("Status pesanan berhasil diubah");
     }
 
 
@@ -201,7 +201,7 @@ class OrderController extends Controller
 
         return back()->with('notification', [
             'title' => 'Pesanan Berhasil',
-            'message' => 'Pesanan anda sudah dibuat, mohon lanjut ke WhatsApp untuk konfirmasi!',
+            'message' => 'Pesanan anda sudah ditambahkan, mohon lanjut ke WhatsApp untuk konfirmasi!',
             'color' => 'green',
             'success' => true,
             'whatsapp' => [

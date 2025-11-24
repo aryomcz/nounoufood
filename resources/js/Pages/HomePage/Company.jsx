@@ -1,8 +1,9 @@
 import { Card, Text, Group, Image, Badge, Stack, List, ThemeIcon } from "@mantine/core";
 import { Icon } from "@iconify/react";
+import { useTranslation } from "react-i18next";
 
 export default function Company({ company }) {
-
+  const { t } = useTranslation();
   // Split data visi & misi berdasarkan koma
   const visiList = company.visi?.split(",").map((v) => v.trim());
   const misiList = company.misi?.split(",").map((m) => m.trim());
@@ -10,7 +11,7 @@ export default function Company({ company }) {
   return (
     <div id="about" className="w-full flex flex-col items-center py-10">
 
-      <img src={company.foto} alt="Foto Company" className="w-full max-w-[840px] rounded-2xl h-auto object-cover" srcset="" />
+      <img src={company?.foto} alt="Foto Company" className="w-full max-w-[840px] rounded-2xl h-auto object-cover" srcset="" />
 
       {/* Tentang Kami + Visi Misi */}
       <div className="flex flex-wrap gap-5 md:gap-10 h-full w-full justify-center mt-12">
@@ -29,14 +30,14 @@ export default function Company({ company }) {
             <div>
                 <Group justify="space-between" align="center">
                     <Text fw={700} size="xl" className="font-poppins-2">
-                        Tentang Kami
+                        {t('sejarah')}
                     </Text>
                     <Badge color="orange">
-                    Berdiri sejak {company.tahun_berdiri}
+                    {t('tahun')} {company.tahun_berdiri}
                     </Badge>
                 </Group>
               <Text mt="sm" className="leading-relaxed">
-                {company.sejarah}
+                {company?.sejarah}
               </Text>
             </div>
           </Stack>
@@ -47,7 +48,7 @@ export default function Company({ company }) {
 
           {/* Visi */}
           <Card withBorder shadow="md" padding="lg" radius="lg"  className="max-w-[320px] lg:max-w-[360px]">
-            <Text fw={700} size="xl">Visi</Text>
+            <Text fw={700} size="xl">{t('visi')}</Text>
 
             <List
               spacing="xs"
@@ -68,7 +69,7 @@ export default function Company({ company }) {
 
           {/* Misi */}
           <Card withBorder shadow="md" padding="lg" radius="lg"  className="max-w-[320px] lg:max-w-[360px]">
-            <Text fw={700} size="xl">Misi</Text>
+            <Text fw={700} size="xl">{t('misi')}</Text>
 
             <List
               spacing="xs"

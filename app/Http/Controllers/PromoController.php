@@ -67,17 +67,20 @@ class PromoController extends Controller
         else {
             $promo = Promo::create($validated);
         }
-
+        
         // 📌 UPDATE PRODUK TERPILIH
         Product::whereNotNull('id_promo')->update(['id_promo' => null]);
-
+        
         if (!empty($validated['produk_ids'])) {
             Product::whereIn('id', $validated['produk_ids'])->update([
                 'id_promo' => $promo->id
             ]);
         }
-
-        return back()->with('success', 'Promo berhasil disimpan!');
+        if ($promo) {
+            return notif_success("Promo berhasil ditambahkan");
+        } else {
+            return notif_success("Promo berhasil diubah");
+        }
     }
 
 }

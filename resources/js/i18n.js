@@ -74,6 +74,24 @@ const resources = {
             nomor: "Nomor",
 
             button_lihat_semua: "Lihat Semua",
+
+            sejarah: "Tentang Kami",
+            tahun: "Berdiri sejak",
+            visi: "Visi",
+            misi: "Misi",
+
+            toko_title: "Kunjungi Toko Offline Kami",
+            toko_subtitle: "Tempat kamu bisa mengujungi kami",
+            button_kunjungi: "Kunjungi",
+
+            testimoni_title: "Testimoni",
+            testimoni_subtitle: "Apasih kata mereka?",
+
+            faq_subtitle: "Pertanyaan yang paling sering ditanyakan",
+
+            detail_promo: "Look up the Discount"
+
+
         },
     },
     en: {
@@ -145,6 +163,24 @@ const resources = {
             nomor: "Number",
 
             button_lihat_semua: "View All",
+
+            sejarah: "About Us",
+            tahun: "Since",
+            visi: "Vision",
+            misi: "Mission",
+
+            toko_title: "Let's Go Visit Our Offline Store",
+            toko_subtitle: "The places to buy our products offline",
+            button_kunjungi: "Visit",
+
+            testimoni_title: "Reviews",
+            testimoni_subtitle: "What did they said about us?",
+
+            faq_subtitle: "Most frequently asked questions",
+
+            detail_promo: "Look up the Discount"
+
+
         },
     },
 };

@@ -42,10 +42,10 @@ const DashboardLayout = ({ children, title }) => {
             <AppShell.Main
                 className={`${
                     darkMode ? "dark bg-dashboard-dark" : "bg-dashboard"
-                }`}
+                } overflow-x-auto`}
             >
                 <Head title={title} />
-                <div className="w-full h-12 bg-white rounded-md !shadow-normal flex justify-between items-center mb-5 dark:bg-slate-800 dark:text-white transition duration-200">
+                <div className="w-full h-12 bg-white rounded-md !shadow-normal flex justify-between items-center mb-5 dark:bg-slate-800 dark:text-white transition duration-200 ">
                     <Navbar
                         toggle={toggle}
                         opened={opened}
@@ -53,7 +53,7 @@ const DashboardLayout = ({ children, title }) => {
                         darkMode={darkMode}
                     />
                 </div>
-                <div>{children}</div>
+                <div className="w-full overflow-x-auto">{children}</div>
             </AppShell.Main>
         </AppShell>
     );

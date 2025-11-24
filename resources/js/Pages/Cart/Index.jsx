@@ -33,6 +33,17 @@ export default function CartIndex({ carts, total, diskon }) {
     });
   };
 
+  useEffect(() => {
+    if (notification) {
+      notifications.show({
+        title: notification.title,
+        message: notification.message,
+        color: notification.color ?? "green",
+        icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+      });
+    }
+  }, [notification]);
+
  const handleOrder = () => {
     router.post(
       route("order.store"),
@@ -78,14 +89,6 @@ export default function CartIndex({ carts, total, diskon }) {
           // REDIRECT WA
           window.location.href = `https://wa.me/${nomorToko}?text=${encoded}`;
 
-          notifications.show({
-            title: notif.title,
-            message: notif.message,
-            color: notif.color ?? "blue",
-            icon: notif.success
-              ? <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
-              : <Icon icon="material-symbols:cancel-outline-rounded" width={24} />
-          });
         },
 
         onError: () => {

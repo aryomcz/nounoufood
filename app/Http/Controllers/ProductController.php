@@ -25,6 +25,7 @@ class ProductController extends Controller
             'nama' => 'required|string|max:255',
             'qty' => 'required|numeric',
             'harga' => 'required|numeric',
+            'stok' => 'required|numeric',
             'deskripsi' => 'string',
             'id_type' => 'required|integer|exists:product_types,id',
             'is_best_seller' => 'boolean',
@@ -43,7 +44,7 @@ class ProductController extends Controller
 
         $produk = Product::create($validated);
 
-        return back()->with('success', 'Produk berhasil ditambahkan.');
+        return notif_success("Produk berhasil ditambahkan");
     }
 
 
@@ -54,6 +55,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'qty' => 'required|numeric',
+            'stok' => 'required|numeric',
             'harga' => 'required|numeric',
             'id_type' => 'required|integer|exists:product_types,id',
             'deskripsi' => 'string',
@@ -86,7 +88,7 @@ class ProductController extends Controller
 
         $produk->update($validated);
 
-        return back()->with('success', 'Produk berhasil diupdate.');
+        return notif_success("Produk berhasil diubah");
     }
 
     public function updateBestSeller(Request $request, $id)
@@ -100,7 +102,27 @@ class ProductController extends Controller
         $product->is_best_seller = $request->is_best_seller;
         $product->save();
 
-        return back()->with('success', 'Status best seller diperbarui');
+        if ($request->is_best_seller == true) {
+            return notif_success("Produk jadi best seller");
+        } else {
+            return notif_success("Produk jadi bukan best seller");
+        }
+
+    }
+
+    public function updateStok(Request $request, $id)
+    {
+        $request->validate([
+            'stok' => 'required|numeric',
+        ]);
+
+        $product = Product::findOrFail($id);
+
+        $product->stok = $request->stok;
+        $product->save();
+
+        return notif_success("Stok berhasil diupdate");
+
     }
 
 
@@ -130,7 +152,7 @@ class ProductController extends Controller
             $produk->delete();
         }
 
-        return back()->with('success', 'Produk berhasil dihapus.');
+       return notif_success("Produk berhasil dihapus");
     }
 
 }

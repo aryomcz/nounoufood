@@ -2,12 +2,13 @@ import { Image, Text, Button } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Icon } from "@iconify/react";
+import { useTranslation } from "react-i18next";
 
 export default function PromoModal({ promos }) {
   const [promoModal, setPromoModal] = useState(false);
   const [activePromo, setActivePromo] = useState(null);
   const [showDetail, setShowDetail] = useState(false); // toggle overlay detail
-
+  const {t} = useTranslation();
   useEffect(() => {
     const today = new Date();
 
@@ -50,7 +51,8 @@ export default function PromoModal({ promos }) {
             {!showDetail && 
             <Icon
               icon="ic:round-close"
-              className="absolute top-4 right-4 cursor-pointer text-gray-600 hover:text-gray-900 z-20"
+              className="absolute top-3 right-3 cursor-pointer text-gray-600 hover:text-gray-900 z-20 bg-secondary-main rounded-full"
+              style={{ color:"white" }}
               width={24}
               height={24}
               onClick={() => setPromoModal(false)}
@@ -78,7 +80,7 @@ export default function PromoModal({ promos }) {
                 fullWidth
                 onClick={() => setShowDetail(true)}
               >
-                Lihat Detail Promo
+                {t('detail_promo')}
               </Button>
             )}
 

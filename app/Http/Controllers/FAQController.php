@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FAQ;
+use App\Models\Faq;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -26,7 +26,7 @@ class FAQController extends Controller
 
         FAQ::create($data);
 
-        return back()->with('success','FAQ ditambahkan');
+        return notif_success("FAQ berhasil ditambahkan");
     }
 
     public function update(Request $request, $id)
@@ -40,7 +40,7 @@ class FAQController extends Controller
             $type = Faq::findOrFail($id);
             $type->update($validated);
 
-            return back()->with('success', 'FAQ berhasil diperbarui.');
+            return notif_success("FAQ berhasil diubah");
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal memperbarui FAQ.');
         }
@@ -56,6 +56,6 @@ class FAQController extends Controller
 
         Faq::whereIn('id', $ids)->delete();
 
-        return back()->with('success', 'Tipe produk berhasil dihapus.');
+        return notif_success("FAQ berhasil dihapus");
     }
 }

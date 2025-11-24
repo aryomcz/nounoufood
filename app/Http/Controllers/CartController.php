@@ -68,7 +68,7 @@ class CartController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Produk ditambahkan ke keranjang');
+        return notif_success("Produk berhasil ditambahkan ke keranjang");
     }
 
     // Update qty
@@ -83,7 +83,7 @@ class CartController extends Controller
         $cart->qty = $request->qty;
         $cart->save();
 
-        return back()->with('success', 'Qty berhasil diperbarui');
+        return notif_success("Jumlah produk berhasil diupdate");
     }
 
     // Update cart item lainnya (opsional)
@@ -101,6 +101,6 @@ class CartController extends Controller
 
         Cart::whereIn('id',$request->cart_id)->delete();
 
-        return back()->with('success', 'Produk dihapus dari keranjang');
+        return notif_success("Produk dihapus dari keranjang");
     }
 }

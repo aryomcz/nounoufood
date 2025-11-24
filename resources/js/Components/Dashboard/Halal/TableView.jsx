@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { router } from "@inertiajs/react";
+import React, { useState, useMemo, useEffect } from "react";
+import { router, usePage } from "@inertiajs/react";
 import {
   Table,
   Checkbox,
@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { Icon } from "@iconify/react";
 import HalalModal from "./Modal";
+import { notifications } from "@mantine/notifications";
 
 export default function TableView({ halal, produk }) {
   const [search, setSearch] = useState("");
@@ -23,7 +24,7 @@ export default function TableView({ halal, produk }) {
 
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState("create");
-  const [formData, setFormData] = useState({ id: null, nama: "" });
+  const [formData, setFormData] = useState({ id: null, no_sertifikasi: "", id_produk:""});
 
   const openCreate = () => {
     setFormMode("create");
@@ -37,19 +38,30 @@ export default function TableView({ halal, produk }) {
     setFormOpen(true);
   };
 
+  const { notification } = usePage().props;
+  
+  useEffect(() => {
+    if (notification) {
+      notifications.show({
+        title: notification.title,
+        message: notification.message,
+        color: notification.color ?? "green",
+        icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+      });
+    }
+  }, [notification]);
+
   const submitForm = (form) => {
     if (formMode === "create") {
       form.post(route("halal.store"), {
         onSuccess: () => {
-          setFormOpen(false);
-          form.reset();
-        },
+          setFormOpen(false);}
       });
     } else {
       form.put(route("halal.update", form.data.id), {
         onSuccess: () => {
           setFormOpen(false);
-        },
+        }
       });
     }
   };
@@ -98,7 +110,7 @@ export default function TableView({ halal, produk }) {
         setSelected([]);
         setDeleteId(null);
         setConfirmOpen(false);
-      },
+      }
     });
   };
 
@@ -131,7 +143,7 @@ export default function TableView({ halal, produk }) {
         </Group>
       </Group>
 
-      <div className="bg-white border shadow-sm rounded-xl p-1">
+      <div className="bg-white border shadow-sm rounded-xl p-1 w-full overflow-x-auto min-w-[840px]">
         <Table highlightOnHover withColumnBorders={false} withTableBorder={false} verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>

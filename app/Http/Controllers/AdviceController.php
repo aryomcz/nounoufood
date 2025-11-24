@@ -26,6 +26,6 @@ class AdviceController extends Controller
 
         Advice::whereIn('id', $ids)->delete();
 
-        return back()->with('success', 'Tipe produk berhasil dihapus.');
+        return notif_success("Saran berhasil dihapus");
     }
 }

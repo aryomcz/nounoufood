@@ -42,7 +42,7 @@ class HalalController extends Controller
 
          try {
             Halal::create($validated);
-            return back()->with('success', 'Tipe produk berhasil dibuat.');
+            return notif_success("Sertifikasi halal berhasil ditambahkan");
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal membuat tipe produk.');
         }
@@ -78,7 +78,8 @@ class HalalController extends Controller
             $halal = Halal::findOrFail($id);
             $halal->update($validated);
 
-            return back()->with('success', 'Tipe produk berhasil diperbarui.');
+            return notif_success("Sertifikasi halal berhasil diubah");
+
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal memperbarui tipe produk.');
         }
@@ -97,6 +98,7 @@ class HalalController extends Controller
 
         Halal::whereIn('id', $ids)->delete();
 
-        return back()->with('success', 'Tipe produk berhasil dihapus.');
+        return notif_success("Sertifikasi halal berhasil dihapus");
+
     }
 }

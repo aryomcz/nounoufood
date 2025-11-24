@@ -12,6 +12,7 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import { Icon } from "@iconify/react";
+import { notifications } from "@mantine/notifications";
 
 export default function TableView({ saran }) {
   const [search, setSearch] = useState("");
@@ -59,10 +60,18 @@ export default function TableView({ saran }) {
 
     router.delete(route("advice.delete"), {
       data: { ids: idsToDelete },
-      onSuccess: () => {
+      onSuccess: (page) => {
         setSelected([]);
         setDeleteId(null);
         setConfirmOpen(false);
+         const notif = page.props.notification;
+                           notifications.show({
+                            title: notif.title,
+                            message: notif.message,
+                            color: notif.color ?? "green",
+                            icon: <Icon icon="material-symbols:check-circle-outline-rounded" width={24} />
+                          });
+        
       },
     });
   };
@@ -86,7 +95,7 @@ export default function TableView({ saran }) {
           />
       </Group>
 
-      <div className="bg-white border shadow-sm rounded-xl p-1">
+      <div className="bg-white border shadow-sm rounded-xl p-1 w-full overflow-x-auto min-w-[840px]">
         <Table highlightOnHover withColumnBorders={false} withTableBorder={false} verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>
