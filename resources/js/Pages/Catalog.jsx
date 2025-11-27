@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react";
 import { useRef, useState, useEffect} from "react";
 import classes from "../../css/Product.module.css"
 import GuestLayout from "@/Layouts/GuestLayout";
-import { useForm, usePage } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import { motion, LayoutGroup, AnimatePresence } from "motion/react";
 import { useTranslation } from "react-i18next";
 import {notifications} from "@mantine/notifications";
@@ -85,38 +85,34 @@ export default function Catalog(props) {
     }, []); 
 
   
-    const handleOrder = () => {
-      form.post(route("order.single.store"), {
+  const handleOrder = () => {
+      router.post(route("order.single.store"),
+      {
+        id_produk: form.data.id_produk,
+        qty: form.data.qty,
+        alamat: form.data.alamat
+      }, {
         onSuccess: (page) => {
+          const wa = page.props.notification.whatsapp
+          
           setConfirmModal(false);
-          setAlamatModal(false);
           setWaDrawer(false);
+          const pesan =
+            `Format Pemesanan Produk Nounoufood\n\n` +
+            `Nama: ${wa.nama}\n` +
+            `No Telepon: ${wa.phone}\n` +
+            `Alamat: ${wa.alamat}\n\n` +
+            `Produk:\n` +
+            wa.items.map(i => `- ${i.nama} x${i.qty}`).join("\n") +
+            `\n\nSubtotal: ${formatRupiah(wa.subtotal)}\n` +
+            `Promo: -${formatRupiah(wa.diskon)}\n` +
+            `Total: ${formatRupiah(wa.total)}`;
   
-           const pesan =
-              `Format Pemesanan Produk Nounoufood\n\n`+
-              `Nama: ${notification.whatsapp.nama}\n` +
-              `No Telepon: ${notification.whatsapp.phone}\n` +
-              `Alamat: ${notification.whatsapp.alamat}\n\n` +
-  
-              `Produk:\n` +
-              notification.whatsapp.items
-                .map((i) => `- ${i.nama} x${i.qty}`)
-                .join("\n") +
-              `\n\n` +
-  
-              `Subtotal: ${formatRupiah(notification.whatsapp.subtotal)}\n` +
-              `Promo: -${formatRupiah(notification.whatsapp.diskon)}\n` +
-              `Total: ${formatRupiah(notification.whatsapp.total)}`;
-  
-  
-            const encoded = encodeURIComponent(pesan);
-  
-            // REDIRECT WA
-            window.location.href = `https://wa.me/${nomorToko}?text=${encoded}`;
+          const encoded = encodeURIComponent(pesan);
+          window.location.href = `https://wa.me/${nomorToko}?text=${encoded}`;
         },
         onError: () => {
           setConfirmModal(false);
-          setAlamatModal(false);
           notifications.show({
             title: "Pesanan Gagal",
             message: "Harap isi alamat dan jumlah produk!",

@@ -215,7 +215,7 @@ useEffect(() => {
                   <Table.Td>{item.komentar}</Table.Td>
                   <Table.Td>
                     <Group justify="center">
-                        <Rating value={item.bintang} />
+                        <Rating value={item.bintang} readOnly />
                     </Group>
                     </Table.Td>
                   <Table.Td>

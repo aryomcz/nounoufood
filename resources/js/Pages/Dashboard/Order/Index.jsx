@@ -18,7 +18,7 @@ const OrderIndex = (props) => {
   const handleReset = () => router.get("/dashboard/orders");
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 overflow-x-auto min-w-[840px]">
       <h1 className="font-poppins text-2xl ml-2">Pesanan Pelanggan</h1>
       <OrderFilterBar onFilterChange={handleFilter} onReset={handleReset} />
       <TableView data={props.data} />

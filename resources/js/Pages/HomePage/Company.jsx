@@ -63,7 +63,7 @@ export default function Company({ company }) {
         </motion.div>
 
         {/* VISI & MISI */}
-        <div className="flex flex-wrap lg:flex-col gap-5 w-full lg:max-w-[360px] justify-center">
+        <div className="flex flex-col gap-5 w-full lg:max-w-[360px] justify-center">
 
           {/* Visi */}
           <motion.div  initial={{ x: 90, opacity: 0 }}

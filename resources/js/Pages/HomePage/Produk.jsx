@@ -18,7 +18,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { Icon } from "@iconify/react";
 import { useEffect, useRef, useState } from "react";
 import classes from "../../../css/Product.module.css";
-import { useForm, usePage } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
 import { motion, LayoutGroup, AnimatePresence } from "motion/react";
 import { useTranslation } from "react-i18next";
@@ -88,7 +88,10 @@ useEffect(() => {
 }, [notification]);
 
   const submitCart = () => {
-    form.post(route("cart.store"), { onSuccess: () => {
+    form.post(route("cart.store"), { 
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => {
       setOpened(false);
     } });
   };
@@ -102,20 +105,30 @@ useEffect(() => {
     }, []); 
 
   const handleOrder = () => {
-    form.post(route("order.single.store"), {
-      onSuccess: () => {
+    router.post(route("order.single.store"),
+    {
+      id_produk: form.data.id_produk,
+      qty: form.data.qty,
+      alamat: form.data.alamat
+    }, {
+      preserveState: true,
+      preserveScroll: true,
+      only: [],
+      onSuccess: (page) => {
+        const wa = page.props.notification.whatsapp
+        
         setConfirmModal(false);
         setWaDrawer(false);
         const pesan =
           `Format Pemesanan Produk Nounoufood\n\n` +
-          `Nama: ${notification.whatsapp.nama}\n` +
-          `No Telepon: ${notification.whatsapp.phone}\n` +
-          `Alamat: ${notification.whatsapp.alamat}\n\n` +
+          `Nama: ${wa.nama}\n` +
+          `No Telepon: ${wa.phone}\n` +
+          `Alamat: ${wa.alamat}\n\n` +
           `Produk:\n` +
-          notification.whatsapp.items.map(i => `- ${i.nama} x${i.qty}`).join("\n") +
-          `\n\nSubtotal: ${formatRupiah(notification.whatsapp.subtotal)}\n` +
-          `Promo: -${formatRupiah(notification.whatsapp.diskon)}\n` +
-          `Total: ${formatRupiah(notification.whatsapp.total)}`;
+          wa.items.map(i => `- ${i.nama} x${i.qty}`).join("\n") +
+          `\n\nSubtotal: ${formatRupiah(wa.subtotal)}\n` +
+          `Promo: -${formatRupiah(wa.diskon)}\n` +
+          `Total: ${formatRupiah(wa.total)}`;
 
         const encoded = encodeURIComponent(pesan);
         window.location.href = `https://wa.me/${nomorToko}?text=${encoded}`;
@@ -174,7 +187,7 @@ const itemVariants = {
         <div className="text-center flex flex-col gap-2">
           <motion.h1 initial={{ y: -100, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
-        viewport={{ once: true, amount: 0.7 }}
+        viewport={{ once: true, amount: 1 }}
         transition={{
           type: "spring",
           bounce: 0.45,
@@ -183,7 +196,7 @@ const itemVariants = {
         }} className="font-poppins-2 font-semibold text-xl lg:text-3xl mt-10">{t('produk_best_seller')}</motion.h1>
           <motion.p  initial={{ y: -100, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
-        viewport={{ once: true, amount: 0.7 }}
+        viewport={{ once: true, amount: 1 }}
         transition={{
           type: "spring",
           bounce: 0.45,
@@ -198,7 +211,7 @@ const itemVariants = {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
+            viewport={{ once: true, amount: 0.6 }}
             className="w-full"
           >  
           <Carousel
@@ -231,7 +244,7 @@ const itemVariants = {
                   onClick={() => { setSelectedId(p.id); setPreviewProduct(p); }}
                   className="cursor-pointer"
                 >
-                  <Card shadow="xl" padding="lg" radius="lg" h="360px" w="100%" maw="256px" ta="start" withBorder style={{ borderRadius: "20px", position: "relative" }}>
+                  <Card shadow="xl" padding="lg" radius="lg" h="360px" w="256px" maw="256px" ta="start" withBorder style={{ borderRadius: "20px", position: "relative" }}>
                     <Card.Section>
                       <motion.img
                         src={p.foto}
@@ -441,13 +454,13 @@ const itemVariants = {
 
         {/* Modal Konfirmasi */}
         <Modal opened={confirmModal} onClose={() => setConfirmModal(false)} centered title={t('konfirmasi_pesanan')}>
-          <Text mb="sm">Apakah Anda yakin ingin memesan {form.data.qty} {selectedProduct?.nama}?</Text>
+          <Text mb="sm">{t('konfirmasi_pesan')} {form.data.qty} {selectedProduct?.nama}?</Text>
           <Text>Subtotal: {formatRupiah(subtotal)}</Text>
           <Text>Promo: -{formatRupiah(potongan)}</Text>
           <Text>Total: {formatRupiah(total)}</Text>
 
           <Group justify="flex-end" mt="md">
-            <Button variant="subtle" onClick={() => setConfirmModal(false)}>{t('batal')}</Button>
+            <Button color="red" variant="subtle" onClick={() => setConfirmModal(false)}>{t('batal')}</Button>
             <Button color="orange" onClick={handleOrder} loading={form.processing} leftSection={<Icon icon="ic:baseline-check" />}>
               {t('ya_pesan_sekarang')}
             </Button>

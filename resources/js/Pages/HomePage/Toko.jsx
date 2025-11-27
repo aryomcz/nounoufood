@@ -3,7 +3,7 @@ import { Card, Image, Text, Button, Group, Badge, Stack } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
 import { Icon } from "@iconify/react";
 import { useRef } from "react";
-import classes from "../../../css/Hero.module.css"
+import classes from "../../../css/Product.module.css"
 import { useTranslation } from "react-i18next";
 import {motion} from "motion/react";
 
@@ -11,6 +11,29 @@ import {motion} from "motion/react";
 export default function Toko({toko}) {
   const {t} = useTranslation();
   const autoplay = useRef(Autoplay({ delay: 4000 }));
+  const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08, // interval antar card
+      delayChildren: 0.05    // sedikit delay awal
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      bounce: 0.35,
+      stiffness: 70,
+      damping: 12,
+    },
+  },
+};
   return (
     <div id="toko" className="w-full flex flex-col justify-center items-center py-10 gap-2 md:gap-10">
       <div className="text-center flex flex-col gap-2">
@@ -33,14 +56,20 @@ export default function Toko({toko}) {
           damping: 12,
         }} className="font-poppins text-sm lg:text-lg capitalize">{t('toko_subtitle')} </motion.p>
       </div>
+       <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.6 }}
+            className="w-full"
+          >  
       <Carousel
         slideSize="256px"
-        w={"100%"}
+        w="100%"
         height="auto"
         slideGap="md"
         align="center"
         classNames={classes}
-        slidesToScroll={4}
         withIndicators
         withControls={false}
         loop
@@ -49,14 +78,14 @@ export default function Toko({toko}) {
         // styles={{ container: {justifyContent:"center"} }}
       >
         {toko?.map((p) => (
-            <Carousel.Slide key={p.id} className="py-10">
+          <motion.div variants={itemVariants} key={p.id}>
+            <Carousel.Slide className="py-10">
               <Card
                 shadow="xl"
                 padding="lg"
                 radius="lg"
                 h="360px" 
-                w="100%" 
-                maw="256px"
+                w="256px"
                 ta="start"
                 withBorder
                 style={{ borderRadius: "20px", position: "relative" }}
@@ -91,8 +120,10 @@ export default function Toko({toko}) {
                 {/* NAMA PRODUK */}
               </Card>
             </Carousel.Slide>
+          </motion.div>
           ))}
       </Carousel>
+      </motion.div>
     </div>
   )
 }

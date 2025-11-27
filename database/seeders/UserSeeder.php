@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
         ]);
         User::create([
             'nama' => 'aryo',
-            'email' => 'yo@mail.com',
+            'email' => 'machfudzaryo@gmail.com',
             'no_hp' => '083870911770',
             'alamat' => 'test',
             'role' => 'pelanggan',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cart;
+use App\Models\CompanyProfile;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,10 +36,14 @@ class CartController extends Controller
             $total += $subtotal - $disc;
         }
 
+        $company = CompanyProfile::first();
+
+
         return inertia('Cart/Index', [
             'carts' => $carts,
             'total' => $total,
-            'diskon' => $disc
+            'diskon' => $disc,
+            'company' => $company
         ]);
     }
 
@@ -68,7 +73,12 @@ class CartController extends Controller
             ]);
         }
 
-        return notif_success("Produk berhasil ditambahkan ke keranjang");
+        return redirect()->back()->with('notification', [
+            'title' => 'Berhasil',
+            'message' => "Produk berhasil ditambahkan ke keranjang",
+            'color' => 'green',
+        ]);
+
     }
 
     // Update qty

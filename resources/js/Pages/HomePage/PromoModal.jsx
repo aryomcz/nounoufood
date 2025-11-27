@@ -8,7 +8,7 @@ export default function PromoModal({ promos }) {
   const [promoModal, setPromoModal] = useState(false);
   const [activePromo, setActivePromo] = useState(null);
   const [showDetail, setShowDetail] = useState(false); // toggle overlay detail
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
   useEffect(() => {
     const today = new Date();
 
@@ -26,15 +26,6 @@ export default function PromoModal({ promos }) {
   }, [promos]);
 
   if (!activePromo) return null;
-
-  function parseDate(str) {
-        const [dateparts, timeparts] = str.split(" ");
-        const [year, month, day] = dateparts.split("-");
-        const [hours = 0, minutes = 0, seconds = 0] = timeparts?.split(":") ?? [];
-        // Treats the string as UTC, but you can remove the `Date.UTC` part and use
-        // `new Date` directly to treat the string as local time
-        return new Date(Date.UTC(+year, +month - 1, +day, +hours, +minutes, +seconds));
-    }
 
   return (
     <AnimatePresence>
@@ -106,19 +97,21 @@ export default function PromoModal({ promos }) {
                   <div>
                   <Text fw={700} size="lg">{activePromo.judul}</Text>
                   <Text size="sm" c="dark" mt="1">
-                    {`Periode: ${new Date(activePromo.tanggal_mulai).toLocaleDateString("id-ID", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            })} s/d ${new Date(activePromo.tanggal_selesai).toLocaleDateString("id-ID", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            })}`}
+                    {`${t('periode')} ${new Date(activePromo.tanggal_mulai).toLocaleDateString(i18n.language, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                    } ${t(`sd`)} ${new Date(activePromo.tanggal_selesai).toLocaleDateString(i18n.language, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                    }`}
                   </Text>
                   <Text mt="2">{activePromo.deskripsi}</Text>
 
-                  <Text mt="2" fw={600}>Produk Promo:</Text>
+                  <Text mt="2" fw={600}>{t('produk_promo')}</Text>
                   <ul className="list-disc list-inside">
                     {activePromo.products.map((p) => (
                       <li key={p.id}>{p.nama}</li>

@@ -19,3 +19,24 @@
 html {
     scroll-behavior: smooth;
 }
+
+@layer utilities {
+    .text-stroke-orange {
+        -webkit-text-stroke: 0.5px #ea580c;
+        /* orange-600 */
+        text-shadow:
+            0.5px 0.5px 0 #ea580c,
+            -0.5px 0.5px 0 #ea580c,
+            0.5px -0.5px 0 #ea580c,
+            -0.5px -0.5px 0 #ea580c;
+    }
+
+    .text-stroke-hover:hover {
+        -webkit-text-stroke: 0.5px #ea580c;
+        text-shadow:
+            0.5px 0.5px 0 #ea580c,
+            -0.5px 0.5px 0 #ea580c,
+            0.5px -0.5px 0 #ea580c,
+            -0.5px -0.5px 0 #ea580c;
+    }
+}

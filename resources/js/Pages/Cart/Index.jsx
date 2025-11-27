@@ -14,11 +14,15 @@ import {
 } from "@mantine/core";
 import { Icon } from "@iconify/react";
 import { notifications } from "@mantine/notifications";
+import {motion} from "motion/react";
+import { useTranslation } from "react-i18next";
+
 
 export default function CartIndex({ carts, total, diskon }) {
-
+  const { t } = useTranslation();
   const {notification} = usePage().props;
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [opened, setOpened] = useState(false);
   const [alamatModal, setAlamatModal] = useState(false);
   const { data, setData, post, processing, errors, reset } = useForm({
@@ -51,6 +55,12 @@ export default function CartIndex({ carts, total, diskon }) {
     useEffect(() => {
       setNomorToko(no);
     }, []);
+
+    console.log(usePage().props);
+    
+    const handleDelete = () => {
+    setConfirmDeleteOpen(true);
+  };
   
 
  const handleOrder = () => {
@@ -61,6 +71,7 @@ export default function CartIndex({ carts, total, diskon }) {
         alamat: data.alamat, 
       },
       {
+        only: [],
         onSuccess: (page) => {
           setConfirmOpen(false);
           setOpened(false);
@@ -136,6 +147,7 @@ export default function CartIndex({ carts, total, diskon }) {
         });
 
     setData("items",[]);
+    setConfirmDeleteOpen(false);
   };
 
   const calculateSelectedTotals = () => {
@@ -175,14 +187,21 @@ export default function CartIndex({ carts, total, diskon }) {
 
   return (
     <GuestLayout>
-      <div className="max-w-7xl mx-auto py-20 px-4 bg-[#FDF7F0] min-h-screen relative">
+      <div className="max-w-7xl mx-auto py-20 lg:py-24 px-4 bg-[#FDF7F0] min-h-screen relative">
         <h1 className="text-4xl font-extrabold text-gray-900 text-center mb-12">
-          Shopping Cart
+          {t('keranjang_belanja')}
         </h1>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* ---------------- LEFT: CART LIST ---------------- */}
-          <div className="lg:w-2/3 bg-white rounded-2xl shadow-lg p-6">
+          <motion.div initial={{ scale: 0.7, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        transition={{
+          type: "spring",
+          bounce: 0.55,
+          stiffness: 80,
+          damping: 14,
+        }} className="lg:w-2/3 bg-white rounded-2xl shadow-lg p-6">
 
             {/* Header */}
             <div className="flex justify-between items-center pb-4 border-b mb-4">
@@ -198,7 +217,7 @@ export default function CartIndex({ carts, total, diskon }) {
                     }
                   }}
                 />
-                <Text>Pilih Semua</Text>
+                <Text>{t('pilih_semua')}</Text>
               </div>
 
               {data.items.length > 0 && (
@@ -207,7 +226,7 @@ export default function CartIndex({ carts, total, diskon }) {
                   size="xs"
                   radius="md" 
                   leftSection={<Icon icon="octicon:trash-16" width={20} height={20} />}
-                  onClick={deleteSelectedItems}
+                  onClick={handleDelete}
                   >
                   Hapus({data.items.length})
                 </Button>
@@ -217,11 +236,11 @@ export default function CartIndex({ carts, total, diskon }) {
             {/* Header kolom untuk desktop */}
             <div className="hidden md:grid grid-cols-8 gap-4 text-gray-500 font-semibold mb-4 text-sm">
               <div>
-              {data.items.length} Barang
+              {data.items.length} {t('barang')}
               </div> {/* checkbox */}
-              <div className="col-span-2">Produk</div>
-              <div className="text-right">Harga</div>
-              <div className="text-center col-span-2">Jumlah</div>
+              <div className="col-span-2">{t('produk')}</div>
+              <div className="text-right">{t('harga')}</div>
+              <div className="text-center col-span-2">{t('jumlah')}</div>
               <div className="text-right col-span-2">Subtotal</div>
             </div>
 
@@ -285,11 +304,11 @@ export default function CartIndex({ carts, total, diskon }) {
                 )}
               </React.Fragment>
             ))}
-          </div>
+          </motion.div>
 
           {/* ---------------- RIGHT: SUMMARY ---------------- */}
           <div className="hidden md:block lg:w-1/3 bg-white rounded-2xl shadow-lg p-6 h-fit sticky top-10">
-            <h2 className="text-xl font-bold mb-4">Ringkasan Pesanan Anda</h2>
+            <h2 className="text-xl font-bold mb-4">{t('ringkasan')}</h2>
 
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -332,7 +351,7 @@ export default function CartIndex({ carts, total, diskon }) {
               })}
              onClick={() => setConfirmOpen(true)}
             >
-              Pesan Sekarang
+              {t('pesan_sekarang')}
             </Button>
           </div>
         </div>
@@ -414,16 +433,16 @@ export default function CartIndex({ carts, total, diskon }) {
         opened={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         centered
-        title="Konfirmasi Pesanan"
+        title={t('konfirmasi_pesanan')}
       >
         <Text mb="md">
-          Apakah Anda yakin ingin membuat pesanan dengan total:
+          {t('konfirmasi_total')}:
           <b> {formatRupiah(totalPrice)}</b>?
         </Text>
 
         <Group justify="flex-end">
-          <Button variant="subtle" onClick={() => setConfirmOpen(false)}>
-            Batal
+          <Button color="red" variant="subtle" onClick={() => setConfirmOpen(false)}>
+            {t('batal')}
           </Button>
 
           <Button
@@ -435,7 +454,7 @@ export default function CartIndex({ carts, total, diskon }) {
 
             leftSection={<Icon icon="ic:baseline-check" />}
           >
-            Ya, Pesan Sekarang
+            {t('ya_pesan_sekarang')}
           </Button>
         </Group>
       </Modal>
@@ -476,6 +495,42 @@ export default function CartIndex({ carts, total, diskon }) {
             leftSection={<Icon icon="ic:baseline-check" />}
           >
             Lanjutkan Pesanan
+          </Button>
+        </Group>
+      </Modal>
+        {/* Modal Konfirmasi Hapus */}
+      <Modal
+        opened={confirmDeleteOpen}
+        onClose={() => setConfirmOpen(false)}
+        top={true}
+        size="xs"
+        radius="lg"
+        withCloseButton={false}
+      >
+        <Text size="sm" mb="md">
+          Apakah kamu yakin ingin menghapus{" "}
+          <strong>{data.items.length}</strong> data ini?
+        </Text>
+
+        <Group justify="center">
+          <Button
+            variant="light"
+            radius="md"
+            size="sm"
+            color="#3D42DF"
+            onClick={() => setConfirmDeleteOpen(false)}
+          >
+            Tidak
+          </Button>
+
+          <Button
+            variant="light"
+            radius="md"
+            size="sm"
+            color="#DD0303"
+            onClick={deleteSelectedItems}
+          >
+            Iya
           </Button>
         </Group>
       </Modal>

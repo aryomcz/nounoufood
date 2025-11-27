@@ -83,9 +83,13 @@ export default function Navbar() {
                             <a
                                 key={item.name}
                                 href={item.hash ? item.path + item.hash : item.path}
-                                className={`${classes['underline-anim']} font-semibold ${
-                                    isActive(item.path, item.hash) ? 'active text-orange-600' : 'text-gray-900'
-                                } hover:text-orange-600`}
+                               className={`font-semibold ${classes['underline-anim']} 
+                                ${isActive(item.path, item.hash)
+                                    ? "text-white text-stroke-orange"
+                                    : "text-gray-900"
+                                }
+                                hover:text-white hover:text-stroke-hover
+                                `}
                             >
                                 {item.name}
                             </a>
@@ -168,10 +172,10 @@ export default function Navbar() {
       }}
 
       // 🔥 HOVER WIGGLE
-      whileHover={{
-        rotate: [-4, 4, -4, 0],
-        transition: { duration: 0.35 },
-      }}
+    //   whileHover={{
+    //     rotate: [-4, 4, -4, 0],
+    //     transition: { duration: 0.35 },
+    //   }}
 
       // 🔥 BOUNCE saat ditekan
       whileTap={{

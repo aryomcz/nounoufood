@@ -12,7 +12,7 @@
 <div style="max-width:500px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;">
     
     <div style="text-align:center;padding:30px;">
-        <img src="{{ url('/logo/logo.png') }}" alt="Nounoufood" style="height:70px;margin-bottom:20px;" />
+        <img src="{{ url('/logo.png') }}" alt="Nounoufood" style="height:70px;margin-bottom:20px;" />
         <h2 style="margin:0;font-size:24px;font-weight:700;color:#333;">Verifikasi Email Anda</h2>
     </div>
 

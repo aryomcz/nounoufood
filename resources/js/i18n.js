@@ -93,8 +93,21 @@ const resources = {
 
             faq_subtitle: "Pertanyaan yang paling sering ditanyakan",
 
-            detail_promo: "Look up the Discount"
+            detail_promo: "Lihat Detail Promo",
+            sd: "s/d",
+            produk_promo: "Produk dengan Promo:",
+            periode: "Periode:",
 
+            konfirmasi_pesan: "Apakah anda yakin ingin memesan",
+            konfirmasi_total: "Apakah Anda yakin ingin membuat pesanan dengan total",
+            pilih_semua: "Pilih Semua",
+            pesan_sekarang: "Pesan Sekarang",
+            jumlah: "Jumlah",
+            produk: "Produk",
+            harga: "Harga",
+            barang: "Barang",
+            keranjang_belanja: "Keranjang Belanja",
+            ringkasan: "Ringkasan Pesanan Anda",
 
         },
     },
@@ -186,9 +199,21 @@ const resources = {
 
             faq_subtitle: "Most frequently asked questions",
 
-            detail_promo: "Look up the Discount"
+            detail_promo: "Look up the Discount",
+            sd: "to",
+            produk_promo: "Products with Discount:",
+            periode: "From:",
 
-
+            konfirmasi_pesan: "Do you want to order",
+            konfirmasi_total: "Do you want to place an order with a total of",
+            pilih_semua: "Select All",
+            pesan_sekarang: "Order Now",
+            jumlah: "Qty",
+            produk: "Product",
+            harga: "Price",
+            barang: "Items",
+            keranjang_belanja: "Shopping Cart",
+            ringkasan: "Your Order Summary",
         },
     },
 };

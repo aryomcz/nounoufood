@@ -204,7 +204,7 @@ class OrderController extends Controller
         // 👇 Kurangi stok
         $product->decrement('stok', $request->qty);
 
-        return back()->with('notification', [
+        return redirect()->back()->with('notification', [
             'title' => 'Pesanan Berhasil',
             'message' => 'Pesanan anda sudah ditambahkan!',
             'color' => 'green',

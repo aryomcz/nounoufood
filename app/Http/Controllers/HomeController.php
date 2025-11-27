@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Advice;
 use App\Models\CompanyProfile;
 use App\Models\Faq;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\Promo;
 use App\Models\Review;
 use App\Models\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -26,6 +29,25 @@ class HomeController extends Controller
         $testi = Review::get();
         $company = CompanyProfile::first();
         $promo = Promo::with('products')->first();
+        $canGiveAdvice = false;
+        $maxSaran = 0;
+        $currentSaran = 0;
+
+         if (Auth::check()) {
+            $userId = Auth::id();
+
+            // jumlah order user dengan status 1
+            $maxSaran = Order::where('id_user', $userId)
+                             ->where('status', 1)
+                             ->count();
+
+            // jumlah saran user yang sudah dikirim
+            $currentSaran = Advice::where('id_user', $userId)->count();
+
+            $canGiveAdvice = $maxSaran > 0 && $currentSaran < $maxSaran;
+        }
+
+
         // $cart
         return Inertia::render('HomePage', [
             'produk' => $products,
@@ -33,15 +55,20 @@ class HomeController extends Controller
             'faq' => $faq, 
             'testi' => $testi,
             'company' => $company,
-            'promo' => $promo
+            'promo' => $promo,
+            'canGiveAdvice' => $canGiveAdvice,
+            'maxSaran' => $maxSaran,
+            'currentSaran' => $currentSaran,
         ]);
     }
 
      public function catalog()
     {
+         $company = CompanyProfile::first();
         $products = ProductType::with(['products.halal','products.promo'])->get();
         return Inertia::render('Catalog', [
-            'produk' => $products
+            'produk' => $products,
+            'company' => $company
         ]);
     }
 }

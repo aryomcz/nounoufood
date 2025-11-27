@@ -32,7 +32,7 @@ export default function QuantitySelector({ productId, initialStok, onUpdateStok 
         <Icon icon="mdi:minus" width="18" />
       </ActionIcon>
 
-      <TextInput w={40} value={value} onChange={changeInput} />
+      <TextInput miw={40} maw={50} value={value} onChange={changeInput} />
 
       <ActionIcon size="md" radius={"xl"} color="black" variant="default" onClick={increment}>
         <Icon icon="mdi:plus" width="18" />

@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified', 'role:pelanggan'])->group(function () {
     Route::delete('/cart', [CartController::class, 'destroy'])->name('cart.delete');
     Route::patch('/cart', [CartController::class, 'updateQty'])->name('cart.qty');
 
+    Route::post('/advice', [AdviceController::class, 'store'])->name('advice.store');
+
     Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
     Route::post('/order/singlestore', [OrderController::class, 'storeWA'])->name('order.single.store');
 
